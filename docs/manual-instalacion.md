@@ -69,8 +69,8 @@ para que apunte al directorio donde está instalado el JDK 21.
 Ejemplo:
 C:\Program Files\Java\jdk-21
 
-En la variable Path debe existir:
-%JAVA_HOME%\bin
+$env:JAVA_HOME="C:\Program Files\Java\jdk-21.0.12.1"
+$env:Path="$env:JAVA_HOME\bin;$env:Path"
 
 Después de modificar las variables de entorno, cerrar y volver a abrir la terminal.
 5. Instalación de Python
