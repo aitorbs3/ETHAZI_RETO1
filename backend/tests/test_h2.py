@@ -8,7 +8,7 @@ def probar_conexion_y_crear_datos():
     ruta_db = obtener_variable("H2_DATABASE")
     print(f"Ruta configurada en .env: {ruta_db}")
     
-    # 2. Conectar a H2 (esto generará automáticamente el archivo prueba_h2.mv.db si no existe)
+    # 2. Conectar a H2 (esto generará automáticamente el archivo si no existe)
     conn = obtener_conexion_h2()
     cursor = conn.cursor()
     
@@ -21,11 +21,14 @@ def probar_conexion_y_crear_datos():
     """)
     print(" Tabla 'prueba_h2' verificada/creada correctamente.")
     
-    # 4. Insertar un registro de prueba
-    cursor.execute("INSERT INTO prueba_h2 (mensaje) VALUES ('Conexión H2 funcionando desde Python')")
+    # 4. Insertar a Harry Potter como mensaje
+    cursor.execute("INSERT INTO prueba_h2 (mensaje) VALUES ('Harry Potter')")
+    
+    # Guardar cambios en la base de datos
+    conn.commit()
     
     # 5. Consultar los datos insertados
-    cursor.execute("SELECT * FROM prueba_h2")
+    cursor.execute("SELECT id, mensaje FROM prueba_h2")
     filas = cursor.fetchall()
     
     print("\nRegistros encontrados en la BD H2 de prueba:")
