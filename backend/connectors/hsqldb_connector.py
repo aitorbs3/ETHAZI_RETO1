@@ -6,6 +6,7 @@ from backend.utils.config import obtener_variable
 from backend.connectors.base import BaseConnector
 
 
+
 def conectar_hsqldb():
     """
     Crea una conexión con la base de datos HSQLDB configurada.

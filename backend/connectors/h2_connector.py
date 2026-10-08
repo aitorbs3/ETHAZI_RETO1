@@ -4,7 +4,6 @@ import jaydebeapi
 import jpype
 from backend.utils.config import obtener_variable
 from backend.connectors.base import BaseConnector
-from backend.connectors.base import BaseConnector
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 H2_JAR = BASE_DIR / "backend" / "drivers" / "h2" / "h2.jar"
