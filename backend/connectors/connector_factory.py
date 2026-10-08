@@ -1,7 +1,7 @@
-from derby_connector import DerbyConnector
-from hsqldb_connector import HSQLDBConnector
-from h2_connector import H2Connector
-from oracle_connector import OracleConnector
+from .derby_connector import DerbyConnector
+from .hsqldb_connector import HSQLDBConnector
+from .h2_connector import H2Connector
+from .oracle_connector import OracleConnector
 
 
 def get_connector(connector_name: str):

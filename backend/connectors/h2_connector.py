@@ -4,6 +4,7 @@ import jaydebeapi
 import jpype
 from backend.utils.config import obtener_variable
 from backend.connectors.base import BaseConnector
+from backend.connectors.base import BaseConnector
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 H2_JAR = BASE_DIR / "backend" / "drivers" / "h2" / "h2.jar"
@@ -41,6 +42,18 @@ class H2Connector(BaseConnector):
     Conector de H2.
 
     Utiliza los métodos de lectura definidos en BaseConnector.
+    """
+
+    def _connect(self):
+        """
+        Utiliza la función de conexión de H2 existente.
+        """
+
+        return obtener_conexion_h2()
+
+class H2Connector(BaseConnector):
+    """
+    Conector de H2.
     """
 
     def _connect(self):
