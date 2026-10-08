@@ -1,37 +1,35 @@
-Instalación y configuración de HSQLDB
-1. Crear la carpeta del driver
-   backend/drivers/hsqldb/
-2. Descargar el driver JDBC
-   - Descargar hsqldb.jar.
-   - Copiarlo en:
-   backend/drivers/hsqldb/hsqldb.jar
-3. Crear la carpeta de la base de datos
-   prueba_hsqldb/
-   
-   En la raíz del proyecto.
-4. Configurar el archivo .env
-   HSQLDB_DATABASE=<RUTA_DEL_PROYECTO>\prueba_hsqldb
-5. Configurar el conector
-   - El archivo backend/connectors/hsqldb_connector.py utilizará:
-     - HSQLDB_DATABASE para localizar la base de datos.
-     - hsqldb.jar como driver JDBC.
-     - org.hsqldb.jdbc.JDBCDriver como driver de conexión.
-6. Activar el entorno virtual
-   .venv\Scripts\activate
-7. Comprobar la conexión
-   Desde la raíz del proyecto:
-   python -m backend.tests.test_hsqldb
-8. Resultado esperado
-   Conexión con HSQLDB realizada correctamente.
-9. Estructura final
-   RETO1/
-   ├── backend/
-   │   ├── connectors/
-   │   │   └── hsqldb_connector.py
-   │   ├── drivers/
-   │   │   └── hsqldb/
-   │   │       └── hsqldb.jar
-   │   └── tests/
-   │       └── test_hsqldb.py
-   ├── prueba_hsqldb/
-   └── .env
+Crear el entorno virtual:
+python -m venv .venv
+
+Desbloquear la ejecución de scripts en la sesión actual de PowerShell:
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+Activar el entorno virtual:
+.\.venv\Scripts\Activate.ps1
+
+Instalar las Dependencias
+Con el entorno virtual activado, instalar las dependencias del proyecto:
+python -m pip install -r backend\requirements.txt
+
+Configurar HSQLDB
+El proyecto incluye el driver JDBC necesario para utilizar HSQLDB.
+Comprobar que el driver se encuentra en el proyecto:
+dir backend\drivers\hsqldb
+
+Debe aparecer:
+hsqldb.jar
+
+Crear la carpeta local para la base de datos de prueba:
+New-Item -ItemType Directory -Path .\prueba_hsqldb -Force
+
+Configurar el Archivo .env
+Crear el archivo .env a partir de la plantilla:
+Copy-Item .env.example .env
+
+Abrir el archivo .env y configurar la variable HSQLDB_DATABASE con la ruta de la carpeta prueba_hsqldb:
+HSQLDB_DATABASE=C:\Ruta\De\Tu\Equipo\ETHAZI_RETO1\prueba_hsqldb
+
+La ruta debe adaptarse a la ubicación donde se haya clonado el proyecto.
+Verificar la Conexión con HSQLDB
+Con el entorno virtual activado y situado en la raíz del proyecto, ejecutar:
+python -m backend.tests.test_hsqldb

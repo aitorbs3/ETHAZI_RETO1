@@ -49,3 +49,14 @@ htmlcov/
 *.swp
 .DS_Store
 Thumbs.db
+
+# =====================
+# TESTS
+# =====================
+
+prueba_h2/
+prueba_oracle/
+prueba_derby/
+prueba_hsqldb/
+prueba_mariadb/
+prueba_sqlite/
