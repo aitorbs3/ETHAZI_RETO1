@@ -42,5 +42,29 @@ services:
       timeout: 5s
       retries: 20
 
+  mariadb:
+    image: mariadb:11.8
+    container_name: reto01-mariadb
+
+    ports:
+      - "3306:3306"
+
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
 volumes:
   oracle_data:
+  mariadb_data:
