@@ -1,162 +1,162 @@
+import sqlite3
 from models.student import Student
 from backend.connectors.connector_factory import get_connector
-
+from connectors.sqlite_connector import get_sqlite_connection
 
 class StudentRepository:
-    """
-    Capa de acceso a datos de los estudiantes.
-
-    El Repository se encarga de comunicarse con los conectores
-    y, más adelante, con el sistema de persistencia central.
-
-    El Service no realiza directamente las consultas a las bases
-    de datos, sino que delega estas operaciones en este Repository.
-    """
-
     def __init__(self):
-        """
-        Inicializa el repositorio de estudiantes.
-        """
-
-        # De momento no necesitamos inicializar ninguna conexión.
-        #
-        # Las conexiones a las bases de datos se gestionarán
-        # posteriormente mediante los conectores correspondientes.
         pass
 
-
-    def get_all_students(self):
-        """
-        Obtiene todos los estudiantes almacenados en el sistema central.
-
-        Returns:
-            list: Lista de estudiantes.
-        """
-
-        # Más adelante aquí realizaremos la consulta
-        # a MariaDB o SQLite.
-        #
-        # De momento devolvemos una lista vacía para que
-        # la estructura de la aplicación esté preparada.
-        return []
-
-
-    def get_student(self, id: str):
-        """
-        Obtiene un estudiante del sistema central mediante su ID.
-
-        Args:
-            id (str): Identificador del estudiante.
-
-        Returns:
-            Student | None: Estudiante encontrado o None
-            si no existe.
-        """
-
-        # Más adelante aquí realizaremos la consulta
-        # a MariaDB o SQLite.
-        #
-        # De momento no tenemos implementada la persistencia
-        # central, por lo que devolvemos None.
+    # ==========================================
+    # MÉTODOS AUXILIARES DE CACHÉ SQLITE
+    # ==========================================
+    def get_student_from_cache(self, id: str) -> Student | None:
+        """Busca un estudiante en la caché SQLite."""
+        query = "SELECT * FROM cache_students WHERE id = ?"
+        with get_sqlite_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (id,))
+            row = cursor.fetchone()
+            if row:
+                row_dict = dict(row)
+                row_dict.pop("fecha_actualizacion", None)
+                return Student(**row_dict)
         return None
 
-
-    def create_student(self, student: Student):
+    def save_student_to_cache(self, student: Student):
+        """Guarda o actualiza un estudiante en la caché SQLite (UPSERT)."""
+        query = """
+        INSERT INTO cache_students (
+            id, nombre, casa, alias, especie, genero, nacimiento,
+            nacionalidad, patronus, patronus_origen, imagen, wiki, fecha_actualizacion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(id) DO UPDATE SET
+            nombre = excluded.nombre,
+            casa = excluded.casa,
+            alias = excluded.alias,
+            especie = excluded.especie,
+            genero = excluded.genero,
+            nacimiento = excluded.nacimiento,
+            nacionalidad = excluded.nacionalidad,
+            patronus = excluded.patronus,
+            patronus_origen = excluded.patronus_origen,
+            imagen = excluded.imagen,
+            wiki = excluded.wiki,
+            fecha_actualizacion = CURRENT_TIMESTAMP;
         """
-        Crea un nuevo estudiante en el sistema central.
+        with get_sqlite_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (
+                student.id, student.nombre, student.casa, student.alias,
+                student.especie, student.genero, student.nacimiento,
+                student.nacionalidad, student.patronus, student.patronus_origen,
+                student.imagen, student.wiki
+            ))
+            conn.commit()
 
-        Args:
-            student (Student): Datos del estudiante que se quiere crear.
+    def delete_student_from_cache(self, id: str):
+        """Elimina un estudiante de la caché SQLite."""
+        query = "DELETE FROM cache_students WHERE id = ?"
+        with get_sqlite_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, (id,))
+            conn.commit()
 
-        Returns:
-            Student: Estudiante creado.
-        """
+    # ==========================================
+    # OPERACIONES CENTRALES Y DE FALLBACK
+    # ==========================================
+    def get_all_students(self):
+        return []
 
-        # Más adelante aquí insertaremos el estudiante
-        # en MariaDB y/o SQLite.
+    def get_student(self, id: str) -> Student | None:
+        # 1. Intentar consultar en la caché SQLite primero
+        try:
+            student_cache = self.get_student_from_cache(id)
+            if student_cache:
+                return student_cache
+        except Exception:
+            pass # Si falla SQLite, continua hacia las BBDD principales
+
+        # 2. Si no está en caché, consultar en MariaDB o BBDD de origen
+        # (Sustituir por la consulta real a MariaDB cuando la tengáis)
+        student = None 
+        
+        # 3. Si se encuentra el alumno en origen, actualizar en la caché
+        if student:
+            try:
+                self.save_student_to_cache(student)
+            except Exception:
+                pass
+
         return student
 
+    def create_student(self, student: Student) -> Student:
+        # 1. Guardar en MariaDB (Sistema Central)
+        # mariadb_conn.insert(student)
 
-    def update_student(self, id: str, student: Student):
-        """
-        Actualiza los datos de un estudiante existente.
-
-        Args:
-            id (str): Identificador del estudiante.
-            student (Student): Nuevos datos del estudiante.
-
-        Returns:
-            Student: Estudiante actualizado.
-        """
-
-        # Más adelante aquí realizaremos la actualización
-        # en la base de datos central.
+        # 2. Guardar en la caché SQLite
+        try:
+            self.save_student_to_cache(student)
+        except Exception:
+            pass
         return student
 
+    def update_student(self, id: str, student: Student) -> Student:
+        # 1. Actualizar en MariaDB
+        # mariadb_conn.update(id, student)
+
+        # 2. Actualizar en la caché SQLite
+        try:
+            self.save_student_to_cache(student)
+        except Exception:
+            pass
+        return student
 
     def delete_student(self, id: str):
-        """
-        Elimina un estudiante del sistema central.
+        # 1. Eliminar de MariaDB
+        # mariadb_conn.delete(id)
 
-        Args:
-            id (str): Identificador del estudiante que se quiere eliminar.
+        # 2. Eliminar de la caché SQLite
+        try:
+            self.delete_student_from_cache(id)
+        except Exception:
+            pass
 
-        Returns:
-            dict: Resultado de la operación.
-        """
-
-        # Más adelante aquí realizaremos la eliminación
-        # en la base de datos central.
-        return {
-            "id": id,
-            "deleted": True
-        }
-
+        return {"id": id, "deleted": True}
 
     def get_students_from_connector(self, connector_name: str):
-        """
-        Obtiene todos los estudiantes desde una base de datos
-        mediante el conector indicado.
-
-        Args:
-            connector_name (str): Nombre del conector que se quiere utilizar.
-
-        Returns:
-            list: Lista de estudiantes obtenidos desde el conector.
-        """
-
-        # Obtenemos el conector correspondiente al nombre recibido.
-        #
-        # Por ejemplo:
-        #   "derby"  -> DerbyConnector
-        #   "hsqldb" -> HSQLDBConnector
-        #   "h2"     -> H2Connector
-        #   "oracle" -> OracleConnector
         connector = get_connector(connector_name)
+        students = connector.get_students()
+        
+        # Opcional: Guardar en caché todos los consultados por conector
+        for student in students:
+            try:
+                if isinstance(student, Student):
+                    self.save_student_to_cache(student)
+            except Exception:
+                pass
+        return students
 
-        # Delegamos la consulta al conector específico.
-        return connector.get_students()
+    def get_student_from_connector(self, connector_name: str, id: str) -> Student | None:
+        # 1. Buscar en caché
+        try:
+            student_cache = self.get_student_from_cache(id)
+            if student_cache:
+                return student_cache
+        except Exception:
+            pass
 
-
-    def get_student_from_connector(
-        self,
-        connector_name: str,
-        id: str
-    ):
-        """
-        Obtiene un estudiante concreto desde una base de datos
-        mediante el conector indicado.
-
-        Args:
-            connector_name (str): Nombre del conector que se quiere utilizar.
-            id (str): Identificador del estudiante.
-
-        Returns:
-            Student | None: Estudiante encontrado o None.
-        """
-
-        # Obtenemos el conector correspondiente.
+        # 2. Buscar mediante conector de la casa de origen
         connector = get_connector(connector_name)
+        student = connector.get_student(id)
 
-        # Delegamos la búsqueda del estudiante al conector.
-        return connector.get_student(id)
+        # 3. Guardar en caché si existía en la casa de origen
+        if student:
+            try:
+                if isinstance(student, dict):
+                    student = Student(**student)
+                self.save_student_to_cache(student)
+            except Exception:
+                pass
+
+        return student

@@ -1,4 +1,26 @@
 services:
+
+  # 1. Tu servicio de Backend con FastAPI
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: reto01-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SQLITE_DATABASE=/app/backend/database/sqlite_reto.db
+      - ORACLE_HOST=oracle
+      - ORACLE_PORT=1521
+      - ORACLE_USER=${ORACLE_USER}
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+    volumes:
+      # Persistencia de SQLite: mapea la carpeta de tu ordenador a la del contenedor
+      - ./backend/database:/app/backend/database
+    depends_on:
+      oracle:
+        condition: service_healthy
+
   oracle:
     image: gvenzl/oracle-free:latest
     container_name: reto01-oracle
