@@ -60,3 +60,9 @@ prueba_derby/
 prueba_hsqldb/
 prueba_mariadb/
 prueba_sqlite/
+
+# ==================
+# SQLITE
+# =================
+*.db
+backend/database/
