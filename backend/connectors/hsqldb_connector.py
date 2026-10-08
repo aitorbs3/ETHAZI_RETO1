@@ -3,6 +3,7 @@ from pathlib import Path
 import jaydebeapi
 
 from backend.utils.config import obtener_variable
+from backend.connectors.base import BaseConnector
 
 
 def conectar_hsqldb():
@@ -43,3 +44,19 @@ def conectar_hsqldb():
         ["SA", ""],
         jars,
     )
+
+
+class HSQLDBConnector(BaseConnector):
+    """
+    Conector de HSQLDB.
+
+    HSQLDB se utiliza como base de datos de origen
+    y solamente permite operaciones de lectura.
+    """
+
+    def _connect(self):
+        """
+        Devuelve una conexión con HSQLDB.
+        """
+
+        return conectar_hsqldb()

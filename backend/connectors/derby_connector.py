@@ -3,6 +3,7 @@ from pathlib import Path
 import jaydebeapi
 
 from backend.utils.config import obtener_variable
+from backend.connectors.base import BaseConnector
 
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -40,3 +41,19 @@ def conectar_derby(crear=False):
         [],
         jars,
     )
+
+
+class DerbyConnector(BaseConnector):
+    """
+    Conector de Apache Derby.
+
+    Derby se utiliza como base de datos de origen
+    y solamente permite operaciones de lectura.
+    """
+
+    def _connect(self):
+        """
+        Devuelve una conexión con Derby.
+        """
+
+        return conectar_derby()
