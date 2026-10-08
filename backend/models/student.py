@@ -1,7 +1,5 @@
 from datetime import date
 
-from datetime import date
-
 from pydantic import BaseModel
 
 
@@ -42,6 +40,22 @@ class StudentCreate(BaseModel):
 
     El identificador no se recibe desde el cliente,
     ya que será generado automáticamente por el backend.
+    """
+
+    nombre: str
+    casa: str
+    especie: str
+    genero: str
+    nacimiento: date | None = None
+    nacionalidad: str
+    patronus: str | None = None
+    imagen: str | None = None
+
+class StudentUpdate(BaseModel):
+    """
+    Modelo utilizado para actualizar un estudiante existente.
+
+    El identificador del estudiante no se modifica.
     """
 
     nombre: str
