@@ -5,18 +5,23 @@ import jaydebeapi
 from backend.utils.config import obtener_variable
 
 
-def conectar_derby():
+ROOT_DIR = Path(__file__).resolve().parents[2]
+
+
+def conectar_derby(crear=False):
     """
-    Crea una conexión con la base de datos Apache Derby configurada.
+    Abre una conexión con Apache Derby.
 
-    Returns:
-        Connection: conexión activa con Apache Derby.
+    Args:
+        crear: crea la base de datos si todavía no existe.
     """
 
-    backend_dir = Path(__file__).resolve().parent.parent
-    drivers_dir = backend_dir / "drivers" / "derby"
+    drivers_dir = ROOT_DIR / "backend" / "drivers" / "derby"
 
-    derby_database = obtener_variable("DERBY_DATABASE")
+    ruta_bd = Path(obtener_variable("DERBY_DATABASE"))
+
+    if not ruta_bd.is_absolute():
+        ruta_bd = ROOT_DIR / ruta_bd
 
     jars = [
         str(drivers_dir / "derby.jar"),
@@ -24,11 +29,13 @@ def conectar_derby():
         str(drivers_dir / "derbytools.jar"),
     ]
 
-    driver = "org.apache.derby.jdbc.EmbeddedDriver"
-    url = f"jdbc:derby:{derby_database}"
+    url = f"jdbc:derby:{ruta_bd}"
+
+    if crear:
+        url += ";create=true"
 
     return jaydebeapi.connect(
-        driver,
+        "org.apache.derby.jdbc.EmbeddedDriver",
         url,
         [],
         jars,
