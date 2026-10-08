@@ -27,7 +27,7 @@ class Student(BaseModel):
     nombre: str
     casa: str
     especie: str
-    genero: str
+    genero: str | None = None
     nacimiento: date | None = None
     nacionalidad: str
     patronus: str | None = None
@@ -45,7 +45,7 @@ class StudentCreate(BaseModel):
     nombre: str
     casa: str
     especie: str
-    genero: str
+    genero: str | None = None
     nacimiento: date | None = None
     nacionalidad: str
     patronus: str | None = None
@@ -61,7 +61,7 @@ class StudentUpdate(BaseModel):
     nombre: str
     casa: str
     especie: str
-    genero: str
+    genero: str | None = None
     nacimiento: date | None = None
     nacionalidad: str
     patronus: str | None = None
