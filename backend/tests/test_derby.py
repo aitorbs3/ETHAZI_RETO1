@@ -1,23 +1,40 @@
 from backend.connectors.derby_connector import conectar_derby
 
 
-def test_conexion_derby():
+def ver_tabla_derby():
     conexion = conectar_derby()
+    cursor = conexion.cursor()
 
     try:
-        cursor = conexion.cursor()
-        cursor.execute("SELECT * FROM alumnos")
+        cursor.execute("SELECT COUNT(*) FROM alumnos")
+        cantidad = cursor.fetchone()[0]
 
-        filas = cursor.fetchall()
+        print(f"Total de alumnos: {cantidad}")
+        print()
 
-        for fila in filas:
-            print(fila)
+        cursor.execute(
+            """
+            SELECT
+                id,
+                nombre,
+                casa,
+                especie,
+                genero,
+                nacimiento,
+                nacionalidad,
+                patronus
+            FROM alumnos
+            FETCH FIRST 20 ROWS ONLY
+            """
+        )
 
-        cursor.close()
+        for alumno in cursor.fetchall():
+            print(alumno)
 
     finally:
+        cursor.close()
         conexion.close()
 
 
 if __name__ == "__main__":
-    test_conexion_derby()
+    ver_tabla_derby()
