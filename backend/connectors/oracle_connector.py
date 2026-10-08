@@ -1,7 +1,7 @@
 import oracledb
 
 from backend.utils.config import obtener_variable
-
+from backend.connectors.base import BaseConnector
 
 def conectar_oracle():
     """
@@ -28,3 +28,17 @@ def conectar_oracle():
         password=password,
         dsn=dsn
     )
+
+class OracleConnector(BaseConnector):
+    """
+    Conector de Oracle.
+
+    Utiliza los métodos de lectura definidos en BaseConnector.
+    """
+
+    def _connect(self):
+        """
+        Utiliza la función de conexión de Oracle existente.
+        """
+
+        return conectar_oracle()
