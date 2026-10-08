@@ -1,18 +1,24 @@
 services:
   oracle:
-    image: container-registry.oracle.com/database/free:latest-lite
+    image: gvenzl/oracle-free:latest
     container_name: reto01-oracle
 
     ports:
       - "1521:1521"
 
     environment:
-      ORACLE_PWD: ${ORACLE_ADMIN_PASSWORD}
+      ORACLE_PASSWORD: ${ORACLE_ADMIN_PASSWORD}
+      APP_USER: ${ORACLE_USER}
+      APP_USER_PASSWORD: ${ORACLE_PASSWORD}
 
     volumes:
       - oracle_data:/opt/oracle/oradata
 
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
 
 volumes:
   oracle_data:
