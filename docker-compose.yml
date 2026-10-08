@@ -2,9 +2,7 @@ services:
 
   # 1. Tu servicio de Backend con FastAPI
   backend-api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    build: ./backend
     container_name: reto01-backend
     ports:
       - "8000:8000"

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import jaydebeapi
 
-from backend.utils.config import obtener_variable
+from utils.config import obtener_variable
 
 
 def conectar_derby():

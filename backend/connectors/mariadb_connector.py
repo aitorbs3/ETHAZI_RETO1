@@ -1,6 +1,6 @@
 import pymysql
 
-from backend.utils.config import obtener_variable
+from utils.config import obtener_variable
 
 
 def conectar_mariadb():

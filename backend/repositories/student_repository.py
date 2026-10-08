@@ -1,6 +1,6 @@
 import sqlite3
 from models.student import Student
-from backend.connectors.connector_factory import get_connector
+from connectors.connector_factory import get_connector
 from connectors.sqlite_connector import get_sqlite_connection
 
 class StudentRepository:

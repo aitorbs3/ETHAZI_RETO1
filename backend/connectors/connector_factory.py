@@ -1,7 +1,29 @@
-from derby_connector import DerbyConnector
-from hsqldb_connector import HSQLDBConnector
-from h2_connector import H2Connector
-from oracle_connector import OracleConnector
+from .derby_connector import conectar_derby
+from .h2_connector import obtener_conexion_h2
+from .hsqldb_connector import conectar_hsqldb
+from .mariadb_connector import conectar_mariadb
+from .oracle_connector import conectar_oracle
+from .sqlite_connector import get_sqlite_connection
+
+
+def get_connector(connector_name: str):
+    """Obtiene el conector correspondiente al nombre recibido."""
+
+    connectors = {
+        "derby": conectar_derby,
+        "hsqldb": conectar_hsqldb,
+        "h2": obtener_conexion_h2,
+        "mariadb": conectar_mariadb,
+        "oracle": conectar_oracle,
+        "sqlite": get_sqlite_connection,
+    }
+
+    connector_class = connectors.get(connector_name.lower())
+
+    if connector_class is None:
+        raise ValueError(f"Conector no soportado: {connector_name}")
+
+    return connector_class()
 
 
 def get_connector(connector_name: str):
