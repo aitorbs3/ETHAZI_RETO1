@@ -2,8 +2,8 @@ from pathlib import Path
 
 import jaydebeapi
 
-from backend.utils.config import obtener_variable
-from backend.connectors.base import BaseConnector
+from utils.config import obtener_variable
+from connectors.base import BaseConnector
 
 
 
