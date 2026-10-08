@@ -6,6 +6,7 @@ from backend.utils.config import obtener_variable
 from backend.connectors.base import BaseConnector
 
 
+
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 

@@ -1,9 +1,8 @@
+import sqlite3
 from datetime import date
-
-from backend.models.student import Student
-from backend.connectors.connector_factory import get_connector
-from backend.connectors.sqlite_connector import get_sqlite_connection
-
+from models.student import Student
+from connectors.connector_factory import get_connector
+from connectors.sqlite_connector import get_sqlite_connection
 
 class StudentRepository:
     """

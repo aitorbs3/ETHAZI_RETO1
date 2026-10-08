@@ -1,7 +1,9 @@
 import oracledb
 
+
 from backend.utils.config import obtener_variable
 from backend.connectors.base import BaseConnector
+
 
 def conectar_oracle():
     """

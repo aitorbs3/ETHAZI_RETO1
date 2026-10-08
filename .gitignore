@@ -66,3 +66,8 @@ prueba_sqlite/
 # =================
 *.db
 backend/database/
+
+# Bases de datos locales
+data/databases/derby/
+data/databases/h2/
+data/databases/hsqldb/
