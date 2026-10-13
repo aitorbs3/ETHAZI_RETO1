@@ -36,7 +36,7 @@ def conectar_hsqldb():
     driver = "org.hsqldb.jdbc.JDBCDriver"
 
     # Construimos la URL JDBC utilizando la ruta configurada.
-    url = f"jdbc:hsqldb:file:{hsqldb_database}\\database"
+    url = f"jdbc:hsqldb:file:{hsqldb_database}\\slytherin"
 
     # Creamos y devolvemos la conexión mediante JayDeBeApi.
     return jaydebeapi.connect(

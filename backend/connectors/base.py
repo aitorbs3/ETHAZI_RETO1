@@ -95,22 +95,6 @@ class BaseConnector(ABC):
 
     @staticmethod
     def row_to_student(row) -> Student:
-        """
-        Convierte una fila de la base de datos en un objeto Student.
-
-        Orden de las columnas:
-
-            0 -> id
-            1 -> nombre
-            2 -> casa
-            3 -> especie
-            4 -> genero
-            5 -> nacimiento
-            6 -> nacionalidad
-            7 -> patronus
-            8 -> imagen
-        """
-
         nacimiento = row[5]
 
         if nacimiento is not None and not isinstance(nacimiento, date):
@@ -118,12 +102,12 @@ class BaseConnector(ABC):
 
         return Student(
             id=str(row[0]),
-            nombre=row[1],
-            casa=row[2],
-            especie=row[3],
-            genero=row[4],
+            nombre=str(row[1]) if row[1] is not None else None,
+            casa=str(row[2]) if row[2] is not None else None,
+            especie=str(row[3]) if row[3] is not None else None,
+            genero=str(row[4]) if row[4] is not None else None,
             nacimiento=nacimiento,
-            nacionalidad=row[6],
-            patronus=row[7],
-            imagen=row[8],
+            nacionalidad=str(row[6]) if row[6] is not None else None,
+            patronus=str(row[7]) if row[7] is not None else None,
+            imagen=str(row[8]) if row[8] is not None else None,
         )

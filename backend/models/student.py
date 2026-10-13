@@ -24,12 +24,12 @@ class Student(BaseModel):
     """
 
     id: str
-    nombre: str
-    casa: str
-    especie: str
+    nombre: str | None = None
+    casa: str | None = None
+    especie: str | None = None
     genero: str | None = None
     nacimiento: date | None = None
-    nacionalidad: str
+    nacionalidad: str | None = None
     patronus: str | None = None
     imagen: str | None = None
 

@@ -1,7 +1,21 @@
 from connectors.connector_factory import get_connector
 
 """""""""
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21.0.12.1"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+
 $env:PYTHONPATH="backend"
+
+derby:
+python -c "from connectors.connector_factory import get_connector; c=get_connector('derby'); print(c.get_student('Albus'))"
+
+h2:
+python -c "from connectors.connector_factory import get_connector; c=get_connector('h2'); print(c.get_student('Cedric'))"
+
+hsqldb:
+python -c "from connectors.connector_factory import get_connector; c=get_connector('hsqldb'); print(c.get_student('Salazar'))"
+
+todo junto:
 python backend/tests/test_connectors.py
 """""""""
 def probar_conector(nombre, nombre_busqueda):
