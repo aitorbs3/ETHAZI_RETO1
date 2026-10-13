@@ -26,14 +26,20 @@ def probar_conector(nombre, nombre_busqueda):
     try:
         connector = get_connector(nombre)
 
+        
         print("\n--- get_students() ---")
 
         estudiantes = connector.get_students()
 
         print(f"Total de estudiantes encontrados: {len(estudiantes)}")
+        print("Mostrando los primeros 20 alumnos:\n")
 
-        for estudiante in estudiantes:
-            print(estudiante)
+        for estudiante in estudiantes[:20]:
+            print(
+                f"ID: {estudiante.id} | "
+                f"Nombre: {estudiante.nombre} | "
+                f"Casa: {estudiante.casa}"
+            )
 
         print("\n--- get_student() ---")
         print(f"Buscando: {nombre_busqueda}")

@@ -4,7 +4,7 @@ import jaydebeapi
 
 from utils.config import obtener_variable
 from connectors.base import BaseConnector
-
+from utils.jvm import iniciar_jvm
 
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -35,6 +35,9 @@ def conectar_derby(crear=False):
 
     if crear:
         url += ";create=true"
+
+    # Cargamos todos los drivers JDBC antes de establecer la conexión.
+    iniciar_jvm()
 
     return jaydebeapi.connect(
         "org.apache.derby.jdbc.EmbeddedDriver",

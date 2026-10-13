@@ -4,7 +4,7 @@ import jaydebeapi
 
 from utils.config import obtener_variable
 from connectors.base import BaseConnector
-
+from utils.jvm import iniciar_jvm
 
 
 def conectar_hsqldb():
@@ -37,6 +37,9 @@ def conectar_hsqldb():
 
     # Construimos la URL JDBC utilizando la ruta configurada.
     url = f"jdbc:hsqldb:file:{hsqldb_database}\\slytherin"
+
+    # Nos aseguramos de que la JVM tenga cargados los drivers JDBC.
+    iniciar_jvm()
 
     # Creamos y devolvemos la conexión mediante JayDeBeApi.
     return jaydebeapi.connect(

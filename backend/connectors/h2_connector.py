@@ -4,6 +4,7 @@ import jaydebeapi
 import jpype
 from utils.config import obtener_variable
 from connectors.base import BaseConnector
+from utils.jvm import iniciar_jvm
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 H2_JAR = BASE_DIR / "backend" / "drivers" / "h2" / "h2.jar"
@@ -22,8 +23,9 @@ def obtener_conexion_h2():
         raise FileNotFoundError(f"No se encontró el driver JDBC en: {H2_JAR}")
 
     try:
-        if not jpype.isJVMStarted():
-            jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={H2_JAR}")
+        # Iniciamos la JVM con todos los drivers JDBC del proyecto.
+        # Si ya está iniciada, se reutiliza.
+        iniciar_jvm()
 
         return jaydebeapi.connect(
             DRIVER_CLASS,
