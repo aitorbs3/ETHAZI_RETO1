@@ -15,6 +15,9 @@ python -c "from connectors.connector_factory import get_connector; c=get_connect
 hsqldb:
 python -c "from connectors.connector_factory import get_connector; c=get_connector('hsqldb'); print(c.get_student('Salazar'))"
 
+oracle:
+python -c "from connectors.connector_factory import get_connector; c=get_connector('oracle'); print(c.get_student('Alannis'))"
+
 todo junto:
 python backend/tests/test_connectors.py
 """""""""
@@ -64,3 +67,4 @@ if __name__ == "__main__":
     probar_conector("derby", "Albus")
     probar_conector("h2", "Cedric")
     probar_conector("hsqldb", "Salazar")
+    probar_conector("oracle", "Alannis")

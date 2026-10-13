@@ -34,13 +34,45 @@ def conectar_oracle():
 class OracleConnector(BaseConnector):
     """
     Conector de Oracle.
-
-    Utiliza los métodos de lectura definidos en BaseConnector.
+    Utiliza los métodos comunes de BaseConnector,
+    adaptando la búsqueda por nombre a Oracle.
     """
 
     def _connect(self):
+        return conectar_oracle()
+
+    def get_student(self, name: str) -> list:
         """
-        Utiliza la función de conexión de Oracle existente.
+        Busca estudiantes por nombre en Oracle.
+        Permite coincidencias parciales.
         """
 
-        return conectar_oracle()
+        connection = self._connect()
+
+        try:
+            cursor = connection.cursor()
+
+            cursor.execute("""
+                SELECT
+                    id,
+                    nombre,
+                    casa,
+                    especie,
+                    genero,
+                    nacimiento,
+                    nacionalidad,
+                    patronus,
+                    imagen
+                FROM alumnos
+                WHERE LOWER(nombre) LIKE LOWER(:nombre)
+            """, {"nombre": f"%{name}%"})
+
+            rows = cursor.fetchall()
+
+            return [
+                self.row_to_student(row)
+                for row in rows
+            ]
+
+        finally:
+            connection.close()
