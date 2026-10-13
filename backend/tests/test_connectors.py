@@ -10,7 +10,7 @@ derby:
 python -c "from connectors.connector_factory import get_connector; c=get_connector('derby'); print(c.get_student('Albus'))"
 
 h2:
-python -c "from connectors.connector_factory import get_connector; c=get_connector('h2'); print(c.get_student('Cedric'))"
+python -c "from backend.connectors.connector_factory import get_connector; c=get_connector('h2'); print(c.get_student('Cedric'))"
 
 hsqldb:
 python -c "from connectors.connector_factory import get_connector; c=get_connector('hsqldb'); print(c.get_student('Salazar'))"

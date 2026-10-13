@@ -11,10 +11,13 @@ H2_JAR = BASE_DIR / "backend" / "drivers" / "h2" / "h2.jar"
 DRIVER_CLASS = "org.h2.Driver"
 
 def obtener_conexion_h2():
-    # Lee H2_DATABASE; si no existe en el .env, obtener_variable lanzará el RuntimeError automáticamente
-    h2_db_path = obtener_variable("H2_DATABASE", obligatoria=True)
-    
-    # Construcción de la URL JDBC
+    h2_db_path = Path(obtener_variable("H2_DATABASE", obligatoria=True))
+
+    if not h2_db_path.is_absolute():
+        h2_db_path = BASE_DIR / h2_db_path
+
+    h2_db_path.parent.mkdir(parents=True, exist_ok=True)
+
     h2_url = f"jdbc:h2:{h2_db_path};AUTO_SERVER=TRUE;DB_CLOSE_DELAY=-1"
     usuario = obtener_variable("H2_USER", obligatoria=False) or "sa"
     password = obtener_variable("H2_PASSWORD", obligatoria=False) or ""
