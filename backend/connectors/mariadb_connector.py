@@ -1,5 +1,5 @@
 import pymysql
-
+from connectors.base_crud import BaseCRUDConnector
 from utils.config import obtener_variable
 
 
@@ -16,3 +16,12 @@ def conectar_mariadb():
         database=obtener_variable("MARIADB_DATABASE"),
         charset="utf8mb4",
     )
+
+class MariaDBConnector(BaseCRUDConnector):
+
+    @property
+    def placeholder(self):
+        return "%s"
+
+    def _connect(self):
+        return conectar_mariadb()
