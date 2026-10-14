@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS alumnos (
 CREATE TABLE IF NOT EXISTS pending_operations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     operation VARCHAR(20) NOT NULL,
-    student_id VARCHAR(50) NOT NULL,
+    student_id VARCHAR(50),
+    nombre VARCHAR(255),
+    nombre_editado VARCHAR(255),
     payload TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     attempts INTEGER NOT NULL DEFAULT 0,

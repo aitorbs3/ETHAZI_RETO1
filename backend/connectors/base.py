@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import date
 
-from backend.models.student import Student
+from models.student import Student
 
 
 class BaseConnector(ABC):

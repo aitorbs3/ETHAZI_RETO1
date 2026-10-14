@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from connectors.base import BaseConnector
-from backend.models.student import Student
+from models.student import Student
 
 
 class BaseCRUDConnector(BaseConnector):
@@ -174,6 +174,91 @@ class BaseCRUDConnector(BaseConnector):
             if cursor is not None:
                 cursor.close()
             connection.close()
+
+    def update_student_by_name(
+        self,
+        name: str,
+        student: Student,
+    ) -> Student:
+        """
+        Actualiza un estudiante por su nombre exacto,
+        ignorando mayúsculas y minúsculas.
+
+        Exige que exista exactamente un estudiante con ese nombre.
+        """
+
+        if not name or not name.strip():
+            raise ValueError("El nombre del estudiante es obligatorio")
+
+        p = self.placeholder
+        connection = self._connect()
+        cursor = None
+
+        try:
+            cursor = connection.cursor()
+
+            # Comprobar cuántos estudiantes tienen ese nombre.
+            cursor.execute(
+                f"""
+                SELECT COUNT(*)
+                FROM {self.TABLE_NAME}
+                WHERE LOWER(nombre) = LOWER({p})
+                """,
+                (name.strip(),),
+            )
+
+            cantidad = cursor.fetchone()[0]
+
+            if cantidad == 0:
+                raise ValueError(
+                    f"No existe ningún estudiante con el nombre '{name}'"
+                )
+
+            if cantidad > 1:
+                raise ValueError(
+                    f"Hay varios estudiantes con el nombre '{name}'. "
+                    "No se puede actualizar de forma segura."
+                )
+
+            # Actualizar el registro encontrado por nombre.
+            cursor.execute(
+                f"""
+                UPDATE {self.TABLE_NAME}
+                SET nombre = {p},
+                    casa = {p},
+                    especie = {p},
+                    genero = {p},
+                    nacimiento = {p},
+                    nacionalidad = {p},
+                    patronus = {p},
+                    imagen = {p}
+                WHERE LOWER(nombre) = LOWER({p})
+                """,
+                (
+                    student.nombre,
+                    student.casa,
+                    student.especie,
+                    student.genero,
+                    student.nacimiento,
+                    student.nacionalidad,
+                    student.patronus,
+                    student.imagen,
+                    name.strip(),
+                ),
+            )
+
+            connection.commit()
+            return student
+
+        except Exception:
+            connection.rollback()
+            raise
+
+        finally:
+            if cursor is not None:
+                cursor.close()
+            connection.close()
+
 
     def delete_student_by_name(self, name: str) -> int:
         """

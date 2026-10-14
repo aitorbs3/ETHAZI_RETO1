@@ -43,7 +43,6 @@ class StudentCreate(BaseModel):
     """
 
     nombre: str
-    nombre: str
     casa: str | None = None
     especie: str | None = None
     genero: str | None = None
