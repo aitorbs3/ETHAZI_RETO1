@@ -175,6 +175,7 @@ class BaseCRUDConnector(BaseConnector):
                 cursor.close()
             connection.close()
 
+
     def update_student_by_name(
         self,
         name: str,
@@ -258,6 +259,7 @@ class BaseCRUDConnector(BaseConnector):
             if cursor is not None:
                 cursor.close()
             connection.close()
+
 
 
     def delete_student_by_name(self, name: str) -> int:

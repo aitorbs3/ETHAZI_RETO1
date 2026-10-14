@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.models.student import Student
+from models.student import Student
 
 
 class StudentResponse(BaseModel):

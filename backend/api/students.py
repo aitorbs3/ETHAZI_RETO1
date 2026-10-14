@@ -1,122 +1,90 @@
+
 from fastapi import APIRouter, HTTPException
 
-from models.student import Student
+from models.student import Student, StudentCreate
 from services.student_service import StudentService
 
 
-# Creamos un router para agrupar todos los endpoints
-# relacionados con los estudiantes.
-#
-# prefix="/students":
-#   Hace que todas las rutas de este router empiecen
-#   por /students.
-#
-# tags=["Students"]:
-#   Agrupa estos endpoints bajo "Students" en la
-#   documentación automática de FastAPI (/docs).
+# Router para las operaciones de estudiantes.
 router = APIRouter(
     prefix="/students",
     tags=["Students"]
 )
 
-
-# Creamos una instancia del servicio que contiene
-# la lógica de las operaciones de estudiantes.
-#
-# La API NO realiza directamente consultas a las bases de datos.
-# La API recibe la petición y delega el trabajo al servicio.
+# Servicio que gestiona la lógica de negocio.
 service = StudentService()
 
 
 @router.get("")
-def get_students():
+def get_students(nombre: str | None = None):
     """
-    Obtiene todos los estudiantes almacenados en el sistema central.
+    Consulta estudiantes.
 
-    Returns:
-        list: Lista de estudiantes.
+    Si se proporciona un nombre, realiza una búsqueda
+    mediante el servicio y el repositorio.
+
+    Si no se proporciona, devuelve los alumnos
+    actualmente almacenados en la caché.
     """
+    try:
+        if nombre is not None:
+            return service.search_students_by_name(nombre)
 
-    # La API delega la operación al servicio.
-    return service.get_all_students()
+        return service.get_all_students()
 
-
-@router.get("/{id}")
-def get_student(id: str):
-    """
-    Obtiene un estudiante mediante su identificador.
-
-    Args:
-        id (str): Identificador del estudiante que se quiere consultar.
-
-    Returns:
-        Student: Datos del estudiante encontrado.
-
-    Raises:
-        HTTPException: Error 404 si el estudiante no existe.
-    """
-
-    # Pedimos al servicio que busque el estudiante.
-    student = service.get_student(id)
-
-    # Si el servicio no encuentra ningún estudiante,
-    # devolvemos un error HTTP 404 (Not Found).
-    if student is None:
+    except ValueError as error:
         raise HTTPException(
-            status_code=404,
-            detail="Estudiante no encontrado"
+            status_code=400,
+            detail=str(error)
         )
-
-    # Si existe, FastAPI convierte el resultado
-    # en una respuesta JSON.
-    return student
 
 
 @router.post("")
-def create_student(student: Student):
+def create_student(student: StudentCreate):
     """
-    Crea un nuevo estudiante en el sistema central.
-    Args:
-        student (Student): Datos del estudiante que se quiere crear.
-    Returns:
-        Student: Estudiante creado.
-    """
+    Crea un nuevo estudiante.
 
-    # FastAPI valida previamente que los datos recibidos
-    # cumplen el modelo Student.
-    #
-    # Después delegamos la creación al servicio.
-    return service.create_student(student)
+    El ID se genera automáticamente en el servicio.
+    """
+    try:
+        return service.create_student(student)
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error)
+        )
 
 
 @router.put("/{id}")
 def update_student(id: str, student: Student):
     """
-    Actualiza los datos de un estudiante existente.
+    Modifica un estudiante mediante su ID interno.
 
-    Args:
-        id (str): Identificador del estudiante que se quiere modificar.
-        student (Student): Nuevos datos del estudiante.
-
-    Returns:
-        Student: Estudiante actualizado.
+    El servicio impide modificar alumnos históricos.
     """
+    try:
+        return service.update_student(id, student)
 
-    # Delegamos la modificación al servicio.
-    return service.update_student(id, student)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error)
+        )
 
 
 @router.delete("/{id}")
 def delete_student(id: str):
     """
-    Elimina un estudiante del sistema central.
+    Elimina un estudiante mediante su ID interno.
 
-    Args:
-        id (str): Identificador del estudiante que se quiere eliminar.
-
-    Returns:
-        Any: Resultado de la operación de eliminación.
+    El servicio impide eliminar alumnos históricos.
     """
+    try:
+        return service.delete_student(id)
 
-    # Delegamos la eliminación al servicio.
-    return service.delete_student(id)
+    except ValueError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error)
+        )

@@ -6,10 +6,10 @@ from models.student import Student
 
 class BaseConnector(ABC):
     """
-    Clase base común para los conectores de lectura.
+    Clase base común para los conectores de bases de datos.
 
-    Contiene las operaciones de consulta compartidas por
-    las diferentes bases de datos.
+    Los conectores de las bases de datos históricas se utilizan
+    para lectura. Las búsquedas se realizan por nombre.
     """
 
     @abstractmethod
@@ -23,8 +23,8 @@ class BaseConnector(ABC):
     @property
     def placeholder(self) -> str:
         """
-        Marcador SQL predeterminado para los conectores JDBC.
-        MariaDB puede sobrescribirlo para utilizar %s.
+        Marcador SQL predeterminado.
+        Los conectores que lo necesiten pueden sobrescribirlo.
         """
         return "?"
 
@@ -32,14 +32,14 @@ class BaseConnector(ABC):
         """
         Obtiene todos los estudiantes de la base de datos.
         """
-
         connection = self._connect()
         cursor = None
 
         try:
             cursor = connection.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT
                     id,
                     nombre,
@@ -51,7 +51,8 @@ class BaseConnector(ABC):
                     patronus,
                     imagen
                 FROM alumnos
-            """)
+                """
+            )
 
             rows = cursor.fetchall()
 
@@ -63,13 +64,18 @@ class BaseConnector(ABC):
         finally:
             if cursor is not None:
                 cursor.close()
+
             connection.close()
 
     def get_student(self, name: str) -> list[Student]:
         """
         Busca estudiantes por nombre.
-        Se permiten coincidencias parciales.
+
+        Permite coincidencias parciales sin distinguir
+        mayúsculas y minúsculas.
         """
+        if not name or not name.strip():
+            raise ValueError("El nombre es obligatorio")
 
         connection = self._connect()
         cursor = None
@@ -92,7 +98,7 @@ class BaseConnector(ABC):
                 FROM alumnos
                 WHERE LOWER(nombre) LIKE LOWER({self.placeholder})
                 """,
-                (f"%{name}%",)
+                (f"%{name.strip()}%",),
             )
 
             rows = cursor.fetchall()
@@ -105,25 +111,27 @@ class BaseConnector(ABC):
         finally:
             if cursor is not None:
                 cursor.close()
+
             connection.close()
 
     @staticmethod
     def row_to_student(row) -> Student:
         """
-        Convierte una fila de la base de datos en un objeto Student.
+        Convierte una fila de base de datos en Student.
 
-        Admite filas tipo tupla (JDBC) y tipo diccionario (MariaDB).
-        El orden esperado de las columnas es:
+        Admite diccionarios y tuplas. Se espera que las columnas
+        estén ordenadas así:
         id, nombre, casa, especie, genero, nacimiento,
         nacionalidad, patronus, imagen.
         """
-
         if isinstance(row, dict):
             get = row.get
 
             nacimiento = get("nacimiento")
 
-            if nacimiento is not None and not isinstance(nacimiento, date):
+            if nacimiento is not None and not isinstance(
+                nacimiento, date
+            ):
                 nacimiento = date.fromisoformat(str(nacimiento))
 
             return Student(
@@ -140,7 +148,9 @@ class BaseConnector(ABC):
 
         nacimiento = row[5]
 
-        if nacimiento is not None and not isinstance(nacimiento, date):
+        if nacimiento is not None and not isinstance(
+            nacimiento, date
+        ):
             nacimiento = date.fromisoformat(str(nacimiento))
 
         return Student(
