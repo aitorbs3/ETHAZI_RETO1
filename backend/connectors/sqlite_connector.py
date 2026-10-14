@@ -37,29 +37,75 @@ def get_sqlite_connection_legacy():
     return get_sqlite_connection()
 
 
+
 def init_sqlite_db():
     """
-    Inicializa la tabla de caché existente.
-    No elimina ni modifica sus datos.
+    Inicializa las tablas necesarias para SQLite.
+
+    cache_students:
+        Caché de las cuatro bases históricas.
+
+    alumnos:
+        Alumnos nuevos gestionados localmente.
+
+    pending_operations:
+        Operaciones pendientes de sincronizar
+        con MariaDB.
+
+    No elimina datos existentes.
     """
 
-    query = """
-        CREATE TABLE IF NOT EXISTS cache_students (
-            id VARCHAR(50) PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            casa VARCHAR(50) NOT NULL,
-            especie VARCHAR(50) NOT NULL,
-            genero VARCHAR(50) NOT NULL,
-            nacimiento DATE,
-            nacionalidad VARCHAR(50) NOT NULL,
-            patronus VARCHAR(100),
-            imagen TEXT
-        );
-    """
+    conn = get_sqlite_connection()
 
-    with get_sqlite_connection() as conn:
-        conn.execute(query)
-        conn.commit()
+    try:
+        with conn:
+
+            # Caché de alumnos históricos
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS cache_students (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    nombre TEXT NOT NULL,
+                    casa TEXT,
+                    especie TEXT,
+                    genero TEXT,
+                    nacimiento TEXT,
+                    nacionalidad TEXT,
+                    patronus TEXT,
+                    imagen TEXT
+                )
+            """)
+
+            # Alumnos nuevos
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS alumnos (
+                    id TEXT PRIMARY KEY NOT NULL,
+                    nombre TEXT NOT NULL,
+                    casa TEXT,
+                    especie TEXT,
+                    genero TEXT,
+                    nacimiento TEXT,
+                    nacionalidad TEXT,
+                    patronus TEXT,
+                    imagen TEXT
+                )
+            """)
+
+            # Cola de sincronización con MariaDB
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS pending_operations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    operation TEXT NOT NULL,
+                    student_id TEXT NOT NULL,
+                    nombre TEXT,
+                    nombre_editado TEXT,
+                    payload TEXT,
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+    finally:
+        conn.close()
+
 
 
 class SQLiteConnector(BaseCRUDConnector):
