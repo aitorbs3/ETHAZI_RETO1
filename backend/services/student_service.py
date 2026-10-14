@@ -125,3 +125,13 @@ class StudentService:
         if not id:
             raise ValueError("El identificador es obligatorio")
         return self.repository.get_student_from_connector(connector, id)
+
+    def search_students_by_name(self, name: str) -> list[Student]:
+        """
+        Busca estudiantes por nombre utilizando la caché de SQLite
+        y, si no hay resultados, las bases de origen.
+        """
+        if not name or not name.strip():
+            raise ValueError("El nombre es obligatorio")
+
+        return self.repository.search_students_by_name(name.strip())

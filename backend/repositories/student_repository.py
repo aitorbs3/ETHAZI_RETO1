@@ -1,4 +1,3 @@
-
 from datetime import date
 
 from models.student import Student

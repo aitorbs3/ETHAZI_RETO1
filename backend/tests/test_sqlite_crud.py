@@ -24,7 +24,6 @@ def ejecutar_script_sql():
         )
 
     sql = sql_file.read_text(encoding="utf-8")
-
     connection = get_sqlite_connection()
 
     try:
@@ -35,10 +34,36 @@ def ejecutar_script_sql():
         connection.close()
 
 
+def mostrar_alumno(alumno):
+    print(f"ID:           {alumno.id}")
+    print(f"Nombre:       {alumno.nombre}")
+    print(f"Casa:         {alumno.casa}")
+    print(f"Especie:      {alumno.especie}")
+    print(f"Género:       {alumno.genero}")
+    print(f"Nacimiento:   {alumno.nacimiento}")
+    print(f"Nacionalidad: {alumno.nacionalidad}")
+    print(f"Patronus:     {alumno.patronus}")
+    print(f"Imagen:       {alumno.imagen}")
+
+
+def mostrar_todos_los_alumnos(connector):
+    alumnos = connector.get_students()
+
+    print(f"\nTotal de alumnos: {len(alumnos)}")
+
+    if not alumnos:
+        print("No hay alumnos en la tabla.")
+        return
+
+    for i, alumno in enumerate(alumnos, start=1):
+        print(f"\n--- Alumno {i} ---")
+        mostrar_alumno(alumno)
+
+
 def probar_sqlite_crud():
     connector = SQLiteConnector()
 
-    alumno = Student(
+    alumno1 = Student(
         id="TESTSQL001",
         nombre="Harry Potter Prueba",
         casa="Gryffindor",
@@ -50,7 +75,7 @@ def probar_sqlite_crud():
         imagen=None,
     )
 
-    alumno_editado = Student(
+    alumno1_editado = Student(
         id="TESTSQL001",
         nombre="Harry Potter Editado",
         casa="Slytherin",
@@ -62,47 +87,64 @@ def probar_sqlite_crud():
         imagen=None,
     )
 
+    alumno2 = Student(
+        id="TESTSQL002",
+        nombre="Hermione Granger Prueba",
+        casa="Gryffindor",
+        especie="Humana",
+        genero="Femenino",
+        nacimiento=date(1979, 9, 19),
+        nacionalidad="Británica",
+        patronus="Nutria",
+        imagen=None,
+    )
+
     try:
         print("\n========== PRUEBA CRUD SQLITE ==========")
 
-        print("\n1. LEER ALUMNOS")
-        print(f"Alumnos encontrados: {len(connector.get_students())}")
-
-        print("\n2. AÑADIR ALUMNO")
+        # Limpiar posibles restos de pruebas anteriores.
         connector.delete_student("TESTSQL001")
-        connector.create_student(alumno)
+        connector.delete_student("TESTSQL002")
 
-        encontrados = connector.get_student("Harry Potter Prueba")
-        assert any(a.id == "TESTSQL001" for a in encontrados)
-        print("Alumno añadido y encontrado correctamente.")
+        print("\n1. ESTADO INICIAL")
+        mostrar_todos_los_alumnos(connector)
 
-        print("\n3. EDITAR ALUMNO")
-        connector.update_student("TESTSQL001", alumno_editado)
+        print("\n2. AÑADIR ALUMNO 1")
+        connector.create_student(alumno1)
+        mostrar_todos_los_alumnos(connector)
 
+        print("\n3. AÑADIR ALUMNO 2")
+        connector.create_student(alumno2)
+        mostrar_todos_los_alumnos(connector)
+
+        print("\n4. EDITAR ALUMNO 1")
+        connector.update_student("TESTSQL001", alumno1_editado)
+        mostrar_todos_los_alumnos(connector)
+
+        # Comprobar que la edición se ha guardado.
         actualizados = connector.get_student("Harry Potter Editado")
         assert any(
             a.id == "TESTSQL001" and a.casa == "Slytherin"
             for a in actualizados
-        )
-        print("Alumno editado correctamente.")
+        ), "El alumno no se ha actualizado correctamente."
 
-        print("\n4. BORRAR POR ID")
-        assert connector.delete_student("TESTSQL001")
-        print("Alumno eliminado por ID.")
+        print("\n5. BORRAR ALUMNO 1 POR ID")
+        eliminado = connector.delete_student("TESTSQL001")
+        assert eliminado, "No se ha eliminado el alumno por ID."
+        mostrar_todos_los_alumnos(connector)
 
-        print("\n5. BORRAR POR NOMBRE")
-        connector.create_student(alumno)
-
+        print("\n6. BORRAR ALUMNO 2 POR NOMBRE")
         eliminados = connector.delete_student_by_name(
-            "Harry Potter Prueba"
+            "Hermione Granger Prueba"
         )
-        assert eliminados >= 1
-        print(f"Alumnos eliminados por nombre: {eliminados}")
+        assert eliminados >= 1, "No se ha eliminado el alumno por nombre."
+        mostrar_todos_los_alumnos(connector)
 
         print("\nTODAS LAS PRUEBAS CRUD HAN FINALIZADO CORRECTAMENTE.")
 
     finally:
         connector.delete_student("TESTSQL001")
+        connector.delete_student("TESTSQL002")
 
 
 if __name__ == "__main__":

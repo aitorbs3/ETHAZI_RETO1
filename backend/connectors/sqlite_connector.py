@@ -13,7 +13,7 @@ def get_sqlite_connection():
 
     ruta_db = os.getenv(
         "SQLITE_DATABASE",
-        "./backend/database/sqlite_reto.db"
+        "./data/databases/sqlite_reto.db"
     )
 
     path_db = Path(ruta_db)
