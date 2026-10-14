@@ -1,158 +1,167 @@
+
+import uuid
+
+from models.student import Student, StudentCreate
 from repositories.student_repository import StudentRepository
-from models.student import Student
+
+
+CASAS_HISTORICAS_SOLO_LECTURA = {
+    "gryffindor",
+    "slytherin",
+    "hufflepuff",
+    "ravenclaw"
+}
 
 
 class StudentService:
     """
-    Capa de servicio encargada de gestionar las operaciones relacionadas con los estudiantes.
-
-    El servicio actúa como intermediario entre la API y la capa de acceso a datos (Repository).
-
-    La API recibe la petición HTTP y delega la operación en este servicio. El servicio decide qué operación realizar y delega el acceso a los datos al Repository.
+    Servicio encargado de gestionar las operaciones
+    relacionadas con los estudiantes.
     """
 
     def __init__(self):
-        """
-        Inicializa el servicio de estudiantes.
-
-        Se crea una instancia del repositorio que será utilizada para acceder a los datos.
-        """
-
-        # Creamos el repositorio que se encargará
-        # del acceso a los datos.
         self.repository = StudentRepository()
 
+    @staticmethod
+    def generate_student_id() -> str:
+        """
+        Genera un identificador único para un estudiante.
+        """
+        return str(uuid.uuid4())
 
     def get_all_students(self):
         """
-        Obtiene todos los estudiantes almacenados en el sistema central.
-
-        Returns:
-            list: Lista de estudiantes.
+        Obtiene todos los estudiantes almacenados
+        actualmente en la caché.
         """
-
-        # De momento delegamos la operación al repositorio.
-        # Más adelante el repositorio realizará la consulta
-        # a MariaDB o SQLite.
         return self.repository.get_all_students()
-
 
     def get_student(self, id: str):
         """
-        Obtiene un estudiante mediante su identificador.
-
-        Args:
-            id (str): Identificador del estudiante.
-
-        Returns:
-            Student | None: Estudiante encontrado o None
-            si no existe.
+        Obtiene un estudiante mediante su ID interno.
+        Se utiliza para identificar registros en el CRUD.
         """
-
-        # Comprobamos que se haya proporcionado un identificador.
         if not id:
             raise ValueError("El identificador es obligatorio")
 
-        # Delegamos la búsqueda al repositorio.
         return self.repository.get_student(id)
 
-
-    def create_student(self, student: Student):
+    def search_students_by_name(self, nombre: str):
         """
-        Crea un nuevo estudiante en el sistema central.
+        Busca estudiantes por nombre.
 
-        Args:
-            student (Student): Datos del estudiante que se quiere crear.
-
-        Returns:
-            Student: Estudiante creado.
+        Primero consulta SQLite y, si no encuentra
+        resultados, busca en las bases de origen.
         """
+        if not nombre or not nombre.strip():
+            raise ValueError("El nombre es obligatorio")
 
-        # Delegamos la creación al repositorio.
-        return self.repository.create_student(student)
+        return self.repository.search_students_by_name(
+            nombre.strip()
+        )
 
+    def create_student(self, student: StudentCreate) -> Student:
+        """
+        Crea un estudiante en el sistema central.
+
+        No permite registrar nuevos alumnos
+        en las casas históricas.
+        """
+        casa_normalizada = student.casa.strip().lower()
+
+        if casa_normalizada in CASAS_HISTORICAS_SOLO_LECTURA:
+            raise ValueError(
+                f"No se pueden registrar nuevos alumnos en "
+                f"la casa histórica '{student.casa}'. "
+                f"Los nuevos alumnos deben pertenecer a Hogwarts."
+            )
+
+        student_id = self.generate_student_id()
+
+        new_student = Student(
+            id=student_id,
+            **student.model_dump()
+        )
+
+        return self.repository.create_student(new_student)
 
     def update_student(self, id: str, student: Student):
         """
-        Actualiza los datos de un estudiante existente.
+        Actualiza los datos de un estudiante.
 
-        Args:
-            id (str): Identificador del estudiante.
-            student (Student): Nuevos datos del estudiante.
-
-        Returns:
-            Student: Estudiante actualizado.
+        No permite modificar estudiantes históricos.
         """
-
-        # Comprobamos que se haya proporcionado un identificador.
         if not id:
             raise ValueError("El identificador es obligatorio")
 
-        # Delegamos la modificación al repositorio.
-        return self.repository.update_student(id, student)
+        existente = self.get_student(id)
 
+        if not existente:
+            raise ValueError(
+                "El estudiante que intenta modificar no existe"
+            )
+
+        casa_actual = existente.casa.strip().lower()
+
+        if casa_actual in CASAS_HISTORICAS_SOLO_LECTURA:
+            raise ValueError(
+                f"Acceso denegado: Los registros de "
+                f"{existente.casa} son de solo lectura."
+            )
+
+        return self.repository.update_student(id, student)
 
     def delete_student(self, id: str):
         """
         Elimina un estudiante del sistema central.
 
-        Args:
-            id (str): Identificador del estudiante que se quiere eliminar.
-
-        Returns:
-            Any: Resultado de la operación de eliminación.
+        No permite eliminar estudiantes históricos.
         """
-
-        # Comprobamos que se haya proporcionado un identificador.
         if not id:
             raise ValueError("El identificador es obligatorio")
 
-        # Delegamos la eliminación al repositorio.
-        return self.repository.delete_student(id)
+        existente = self.get_student(id)
 
+        if existente:
+            casa_actual = existente.casa.strip().lower()
+
+            if casa_actual in CASAS_HISTORICAS_SOLO_LECTURA:
+                raise ValueError(
+                    f"Acceso denegado: No se pueden eliminar "
+                    f"registros históricos de {existente.casa}."
+                )
+
+        return self.repository.delete_student(id)
 
     def get_students_from_connector(self, connector: str):
         """
-        Obtiene los estudiantes desde una base de datos
-        mediante el conector indicado.
-
-        Args:
-            connector (str): Nombre del conector que se quiere utilizar.
-
-        Returns:
-            list: Lista de estudiantes obtenidos del conector.
+        Obtiene todos los estudiantes de una base
+        de datos específica.
         """
-
-        # Comprobamos que se haya indicado un conector.
-        if not connector:
+        if not connector or not connector.strip():
             raise ValueError("El conector es obligatorio")
 
-        # Delegamos la operación al repositorio.
-        return self.repository.get_students_from_connector(connector)
+        return self.repository.get_students_from_connector(
+            connector
+        )
 
-
-    def get_student_from_connector(self, connector: str, id: str):
+    def get_student_from_connector(
+        self,
+        connector: str,
+        nombre: str
+    ):
         """
-        Obtiene un estudiante concreto desde una base de datos
-        mediante el conector indicado.
+        Busca estudiantes por nombre en un conector.
 
-        Args:
-            connector (str): Nombre del conector que se quiere utilizar.
-            id (str): Identificador del estudiante.
-
-        Returns:
-            Student | None: Estudiante encontrado o None.
+        Permite coincidencias parciales.
         """
-
-        # Comprobamos los datos recibidos.
-        if not connector:
+        if not connector or not connector.strip():
             raise ValueError("El conector es obligatorio")
 
-        if not id:
-            raise ValueError("El identificador es obligatorio")
+        if not nombre or not nombre.strip():
+            raise ValueError("El nombre es obligatorio")
 
-        # Delegamos la consulta al repositorio.
         return self.repository.get_student_from_connector(
             connector,
-            id
+            nombre.strip()
         )

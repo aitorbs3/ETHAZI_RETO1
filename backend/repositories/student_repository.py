@@ -1,5 +1,5 @@
 from models.student import Student
-from backend.connectors.connector_factory import get_connector
+from connectors.connector_factory import get_connector
 
 
 class StudentRepository:
