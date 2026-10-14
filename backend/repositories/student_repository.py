@@ -7,7 +7,6 @@ from connectors.connector_factory import get_connector
 from connectors.sqlite_connector import get_sqlite_connection
 
 
-
 class StudentRepository:
     SOURCE_CONNECTORS = ("derby", "h2", "hsqldb", "oracle")
 
@@ -67,6 +66,7 @@ class StudentRepository:
                 patronus = excluded.patronus,
                 imagen = excluded.imagen
         """
+
         nacimiento = (
             student.nacimiento.isoformat()
             if student.nacimiento is not None
@@ -116,6 +116,7 @@ class StudentRepository:
                    nacimiento, nacionalidad, patronus, imagen
             FROM alumnos
         """
+
         with get_sqlite_connection() as conn:
             rows = conn.execute(query).fetchall()
 
@@ -128,7 +129,7 @@ class StudentRepository:
         return list(resultado.values())
 
     def get_student(self, student_id: str) -> Student | None:
-        """Consulta primero los alumnos locales y después la caché."""
+        """Busca por UUID primero en los alumnos locales y después en caché."""
         with get_sqlite_connection() as conn:
             row = conn.execute(
                 """
@@ -146,7 +147,7 @@ class StudentRepository:
         return self.get_student_from_cache(student_id)
 
     def get_student_by_name(self, name: str) -> Student | None:
-        """Busca un nombre exacto, ignorando mayúsculas y minúsculas."""
+        """Busca un nombre exacto. No permite resolver nombres duplicados."""
         if not name or not name.strip():
             raise ValueError("El nombre es obligatorio")
 
@@ -164,7 +165,7 @@ class StudentRepository:
         if len(rows) > 1:
             raise ValueError(
                 "Hay varios alumnos locales con ese nombre. "
-                "No se puede realizar la operación de forma segura."
+                "Selecciona el alumno que quieres modificar."
             )
 
         if rows:
@@ -178,12 +179,15 @@ class StudentRepository:
         ]
 
         if len(coincidencias) > 1:
-            raise ValueError("Hay varios alumnos con ese nombre.")
+            raise ValueError(
+                "Hay varios alumnos con ese nombre. "
+                "Selecciona el alumno que quieres modificar."
+            )
 
         return coincidencias[0] if coincidencias else None
 
     def search_students_by_name(self, name: str) -> list[Student]:
-        """Busca coincidencias por nombre en alumnos, caché y fuentes."""
+        """Busca coincidencias parciales por nombre en SQLite y fuentes."""
         if not name or not name.strip():
             raise ValueError("El nombre es obligatorio")
 
@@ -208,6 +212,7 @@ class StudentRepository:
         for student in self.search_students_in_cache(name):
             encontrados[student.id] = student
 
+        # Si SQLite ya tiene resultados, no consultamos las fuentes externas.
         if encontrados:
             return list(encontrados.values())
 
@@ -242,7 +247,7 @@ class StudentRepository:
         return datos
 
     def create_student(self, student: Student) -> Student:
-        """Guarda el alumno y su operación CREATE en una transacción."""
+        """Crea el alumno y encola CREATE dentro de una transacción SQLite."""
         if not student.id:
             student.id = str(uuid.uuid4())
 
@@ -251,6 +256,7 @@ class StudentRepository:
             if student.nacimiento is not None
             else None
         )
+
         payload = json.dumps(
             self._student_payload(student),
             ensure_ascii=False,
@@ -294,15 +300,17 @@ class StudentRepository:
 
         return student
 
-    def update_student(self, name: str, student: Student) -> Student:
-        """
-        Actualiza por nombre exacto y registra el cambio en la misma
-        transacción SQLite.
-        """
-        if not name or not name.strip():
-            raise ValueError("El nombre del alumno es obligatorio")
+    def update_student_by_id(
+        self,
+        student_id: str,
+        student: Student,
+    ) -> Student:
+        """Actualiza exclusivamente el alumno identificado por UUID."""
+        if not student_id:
+            raise ValueError("El identificador del alumno es obligatorio")
 
-        nombre_anterior = name.strip()
+        student.id = student_id
+
         nacimiento = (
             student.nacimiento.isoformat()
             if student.nacimiento is not None
@@ -312,21 +320,15 @@ class StudentRepository:
         with get_sqlite_connection() as conn:
             conn.execute("BEGIN")
 
-            rows = conn.execute(
-                """
-                SELECT id, nombre
-                FROM alumnos
-                WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))
-                """,
-                (nombre_anterior,),
-            ).fetchall()
+            row = conn.execute(
+                "SELECT nombre FROM alumnos WHERE id = ?",
+                (student_id,),
+            ).fetchone()
 
-            if len(rows) != 1:
-                raise ValueError(
-                    "No se encontró un único alumno local con ese nombre."
-                )
+            if row is None:
+                raise ValueError("No se encontró el alumno seleccionado.")
 
-            student.id = str(rows[0]["id"])
+            nombre_anterior = row["nombre"]
 
             payload = json.dumps(
                 self._student_payload(student),
@@ -350,7 +352,7 @@ class StudentRepository:
                     student.nacionalidad,
                     student.patronus,
                     student.imagen,
-                    student.id,
+                    student_id,
                 ),
             )
 
@@ -366,7 +368,7 @@ class StudentRepository:
                 """,
                 (
                     "UPDATE",
-                    student.id,
+                    student_id,
                     nombre_anterior,
                     student.nombre,
                     payload,
@@ -377,32 +379,23 @@ class StudentRepository:
 
         return student
 
-    def delete_student(self, name: str) -> bool:
-        """Elimina por nombre exacto y registra DELETE atómicamente."""
-        if not name or not name.strip():
-            raise ValueError("El nombre del alumno es obligatorio")
-
-        nombre = name.strip()
+    def delete_student_by_id(self, student_id: str) -> bool:
+        """Elimina exclusivamente el alumno identificado por UUID."""
+        if not student_id:
+            raise ValueError("El identificador del alumno es obligatorio")
 
         with get_sqlite_connection() as conn:
             conn.execute("BEGIN")
 
-            rows = conn.execute(
-                """
-                SELECT id, nombre
-                FROM alumnos
-                WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))
-                """,
-                (nombre,),
-            ).fetchall()
+            row = conn.execute(
+                "SELECT nombre FROM alumnos WHERE id = ?",
+                (student_id,),
+            ).fetchone()
 
-            if len(rows) != 1:
-                raise ValueError(
-                    "No se encontró un único alumno local con ese nombre."
-                )
+            if row is None:
+                raise ValueError("No se encontró el alumno seleccionado.")
 
-            student_id = str(rows[0]["id"])
-            nombre_real = rows[0]["nombre"]
+            nombre_real = row["nombre"]
 
             cursor = conn.execute(
                 "DELETE FROM alumnos WHERE id = ?",
@@ -435,6 +428,7 @@ class StudentRepository:
         connector_name: str,
     ) -> list[Student]:
         connector = get_connector(connector_name)
+
         return [
             self._ensure_student(student)
             for student in connector.get_students()
@@ -446,6 +440,7 @@ class StudentRepository:
         name: str,
     ) -> list[Student]:
         connector = get_connector(connector_name)
+
         return [
             self._ensure_student(student)
             for student in connector.get_student(name)

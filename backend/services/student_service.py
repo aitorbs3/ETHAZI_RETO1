@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from models.student import Student, StudentCreate
 from repositories.student_repository import StudentRepository
+from backend.services.sync_service import SyncService
 
 
 CASAS_HISTORICAS_SOLO_LECTURA = {
@@ -11,171 +14,134 @@ CASAS_HISTORICAS_SOLO_LECTURA = {
 
 
 class StudentService:
-    """
-    Servicio encargado de gestionar las operaciones
-    relacionadas con los estudiantes.
-    """
-
     def __init__(self):
         self.repository = StudentRepository()
+        self.sync_service = SyncService()
+        self.ultima_sincronizacion = None
 
-    # ==========================================================
-    # CONSULTAS
-    # ==========================================================
+    def _intentar_sincronizar(self):
+        """Intenta sincronizar con MariaDB sin perder los cambios locales."""
+        try:
+            resultado = self.sync_service.sincronizar_pendientes()
+            self.ultima_sincronizacion = {
+                "fecha": datetime.now().isoformat(),
+                "resultado": resultado,
+            }
+            return resultado
+        except Exception as error:
+            print(f"No se pudo sincronizar con MariaDB: {error}")
+            return {
+                "procesadas": 0,
+                "fallidas": 0,
+                "detalles": [],
+                "error": str(error),
+            }
 
-    def get_all_students(self):
-        """Obtiene los estudiantes almacenados localmente."""
+    @staticmethod
+    def _validar_nombre(nombre: str | None):
+        if nombre is None or not nombre.strip():
+            raise ValueError("El nombre del alumno es obligatorio.")
+
+    @staticmethod
+    def _validar_casa_historica(casa: str | None):
+        if casa and casa.strip().casefold() in CASAS_HISTORICAS_SOLO_LECTURA:
+            raise ValueError(
+                "No se pueden modificar ni eliminar alumnos "
+                "de las casas históricas."
+            )
+
+    def get_all_students(self) -> list[Student]:
         return self.repository.get_all_students()
 
-    def get_student(self, student_id: str):
-        """
-        Consulta un estudiante por su identificador interno.
-        Se conserva para compatibilidad con consultas existentes.
-        """
-        if not student_id:
-            raise ValueError("El identificador es obligatorio")
+    def get_student(self, student_id: str) -> Student:
+        student = self.repository.get_student(student_id)
 
-        return self.repository.get_student(student_id)
+        if student is None:
+            raise ValueError("No se encontró el alumno.")
+
+        return student
 
     def search_students_by_name(self, nombre: str) -> list[Student]:
-        """Busca estudiantes por nombre."""
-        if not nombre or not nombre.strip():
-            raise ValueError("El nombre es obligatorio")
+        self._validar_nombre(nombre)
+        return self.repository.search_students_by_name(nombre)
 
-        return self.repository.search_students_by_name(
-            nombre.strip()
-        )
+    def create_student(self, student_data: StudentCreate) -> Student:
+        self._validar_nombre(student_data.nombre)
 
-    # ==========================================================
-    # CREATE
-    # ==========================================================
+        self._validar_casa_historica(student_data.casa)
 
-    def create_student(self, student: StudentCreate) -> Student:
-        """
-        Crea un alumno nuevo en SQLite y registra la operación
-        pendiente para sincronizarla con MariaDB.
-
-        El UUID se genera en el repositorio.
-        """
-        casa = student.casa.strip().lower() if student.casa else ""
-
-        if casa in CASAS_HISTORICAS_SOLO_LECTURA:
-            raise ValueError(
-                f"No se pueden registrar nuevos alumnos en la casa "
-                f"histórica '{student.casa}'. Los nuevos alumnos "
-                "deben pertenecer a 'Hogwarts'."
-            )
-
-        nuevo = Student(
+        student = Student(
             id="",
-            **student.model_dump(),
+            **student_data.model_dump(),
         )
 
-        return self.repository.create_student(nuevo)
+        creado = self.repository.create_student(student)
+        self._intentar_sincronizar()
 
-    # ==========================================================
-    # UPDATE
-    # ==========================================================
+        return creado
 
-    def update_student(self, nombre: str, student: Student) -> Student:
-        """
-        Actualiza un alumno identificado por su nombre exacto.
-        """
-        if not nombre or not nombre.strip():
-            raise ValueError("El nombre del alumno es obligatorio")
+    def update_student_by_id(
+        self,
+        student_id: str,
+        student_data: Student,
+    ) -> Student:
+        if not student_id or not student_id.strip():
+            raise ValueError("El identificador del alumno es obligatorio.")
 
-        existente = self.repository.get_student_by_name(nombre)
+        alumno_actual = self.repository.get_student(student_id)
 
-        if existente is None:
-            raise ValueError(
-                "El alumno que intenta modificar no existe"
-            )
+        if alumno_actual is None:
+            raise ValueError("No se encontró el alumno seleccionado.")
 
-        casa_actual = (
-            existente.casa.strip().lower()
-            if existente.casa
-            else ""
+        self._validar_nombre(student_data.nombre)
+
+        self._validar_casa_historica(alumno_actual.casa)
+        self._validar_casa_historica(student_data.casa)
+
+        student_data.id = student_id
+
+        actualizado = self.repository.update_student_by_id(
+            student_id,
+            student_data,
         )
 
-        if casa_actual in CASAS_HISTORICAS_SOLO_LECTURA:
-            raise ValueError(
-                f"Acceso denegado: los registros de "
-                f"{existente.casa} son de solo lectura."
-            )
+        self._intentar_sincronizar()
 
-        casa_nueva = (
-            student.casa.strip().lower()
-            if student.casa
-            else ""
-        )
+        return actualizado
 
-        if casa_nueva in CASAS_HISTORICAS_SOLO_LECTURA:
-            raise ValueError(
-                "No se puede asignar un alumno editable "
-                "a una casa histórica."
-            )
+    def delete_student_by_id(self, student_id: str) -> dict:
+        if not student_id or not student_id.strip():
+            raise ValueError("El identificador del alumno es obligatorio.")
 
-        return self.repository.update_student(nombre, student)
+        alumno = self.repository.get_student(student_id)
 
-    # ==========================================================
-    # DELETE
-    # ==========================================================
+        if alumno is None:
+            raise ValueError("No se encontró el alumno seleccionado.")
 
-    def delete_student(self, nombre: str) -> bool:
-        """
-        Elimina un alumno por nombre y registra el borrado
-        pendiente de sincronizar con MariaDB.
-        """
-        if not nombre or not nombre.strip():
-            raise ValueError("El nombre del alumno es obligatorio")
+        self._validar_casa_historica(alumno.casa)
 
-        existente = self.repository.get_student_by_name(nombre)
+        self.repository.delete_student_by_id(student_id)
+        resultado_sync = self._intentar_sincronizar()
 
-        if existente is None:
-            raise ValueError(
-                "El alumno que intenta eliminar no existe"
-            )
+        return {
+            "mensaje": "Alumno eliminado localmente.",
+            "student_id": student_id,
+            "sincronizacion": resultado_sync,
+        }
 
-        casa = (
-            existente.casa.strip().lower()
-            if existente.casa
-            else ""
-        )
-
-        if casa in CASAS_HISTORICAS_SOLO_LECTURA:
-            raise ValueError(
-                f"Acceso denegado: no se pueden eliminar "
-                f"registros históricos de {existente.casa}."
-            )
-
-        return self.repository.delete_student(nombre)
-
-    # ==========================================================
-    # CONSULTAS A CONECTORES
-    # ==========================================================
-
-    def get_students_from_connector(self, connector: str):
-        """Obtiene estudiantes de un conector específico."""
-        if not connector or not connector.strip():
-            raise ValueError("El conector es obligatorio")
-
-        return self.repository.get_students_from_connector(
-            connector.strip()
-        )
+    def get_students_from_connector(
+        self,
+        connector_name: str,
+    ) -> list[Student]:
+        return self.repository.get_students_from_connector(connector_name)
 
     def get_student_from_connector(
         self,
-        connector: str,
+        connector_name: str,
         nombre: str,
-    ):
-        """Busca coincidencias por nombre en un conector."""
-        if not connector or not connector.strip():
-            raise ValueError("El conector es obligatorio")
-
-        if not nombre or not nombre.strip():
-            raise ValueError("El nombre es obligatorio")
-
+    ) -> list[Student]:
+        self._validar_nombre(nombre)
         return self.repository.get_student_from_connector(
-            connector.strip(),
-            nombre.strip(),
+            connector_name,
+            nombre,
         )

@@ -6,7 +6,7 @@ from connectors.sqlite_connector import get_sqlite_connection
 class PendingOperationsRepository:
     """
     Gestiona las operaciones pendientes de sincronizar con MariaDB.
-    Todas las operaciones se identifican por el nombre del alumno.
+    Cada operación identifica al alumno mediante su UUID (student_id).
     """
 
     def add_pending_operation(
@@ -15,6 +15,7 @@ class PendingOperationsRepository:
         nombre: str,
         payload: dict | None = None,
         nombre_editado: str | None = None,
+        student_id: str | None = None,
     ) -> int:
         """
         Registra una operación pendiente.
@@ -22,7 +23,8 @@ class PendingOperationsRepository:
         operation: CREATE, UPDATE o DELETE.
         nombre: nombre original del alumno.
         payload: datos del alumno en formato diccionario.
-        nombre_editado: nuevo nombre si se modifica el nombre.
+        nombre_editado: nuevo nombre si se modifica.
+        student_id: UUID del alumno afectado.
         """
         operation = operation.strip().upper()
 
@@ -40,6 +42,16 @@ class PendingOperationsRepository:
                 "nombre_editado solo se utiliza en operaciones UPDATE"
             )
 
+        # Si no se proporciona explícitamente, intenta recuperar el UUID
+        # del payload, que debe contenerlo en CREATE y UPDATE.
+        if not student_id and payload:
+            student_id = payload.get("id")
+
+        if not student_id:
+            raise ValueError(
+                "El UUID del alumno (student_id) es obligatorio."
+            )
+
         payload_json = (
             json.dumps(payload, ensure_ascii=False, default=str)
             if payload is not None
@@ -55,14 +67,16 @@ class PendingOperationsRepository:
                 """
                 INSERT INTO pending_operations (
                     operation,
+                    student_id,
                     nombre,
                     nombre_editado,
                     payload
                 )
-                VALUES (?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
                 """,
                 (
                     operation,
+                    student_id,
                     nombre.strip(),
                     nombre_editado.strip()
                     if nombre_editado is not None
@@ -86,7 +100,7 @@ class PendingOperationsRepository:
     def get_pending_operations(self) -> list[dict]:
         """
         Devuelve las operaciones pendientes de la más antigua
-        a la más reciente.
+        a la más reciente, incluyendo el UUID del alumno.
         """
         connection = get_sqlite_connection()
         cursor = None
@@ -98,6 +112,7 @@ class PendingOperationsRepository:
                 SELECT
                     id,
                     operation,
+                    student_id,
                     nombre,
                     nombre_editado,
                     payload,
@@ -120,6 +135,12 @@ class PendingOperationsRepository:
                         operation["payload"]
                     )
 
+                # Compatibilidad con operaciones CREATE/UPDATE antiguas
+                # cuyo payload ya contenía el UUID, pero no lo guardaron
+                # en la columna student_id.
+                if not operation.get("student_id") and operation.get("payload"):
+                    operation["student_id"] = operation["payload"].get("id")
+
                 operations.append(operation)
 
             return operations
@@ -134,10 +155,7 @@ class PendingOperationsRepository:
         operation_id: int,
         error: str,
     ) -> bool:
-        """
-        Incrementa los intentos y guarda el último error.
-        operation_id identifica la operación pendiente, no al alumno.
-        """
+        """Incrementa los intentos y guarda el último error."""
         connection = get_sqlite_connection()
         cursor = None
 
@@ -165,15 +183,8 @@ class PendingOperationsRepository:
                 cursor.close()
             connection.close()
 
-    def delete_pending_operation(
-        self,
-        operation_id: int,
-    ) -> bool:
-        """
-        Elimina una operación de la cola después de sincronizarla
-        correctamente con MariaDB.
-        operation_id identifica la operación pendiente.
-        """
+    def delete_pending_operation(self, operation_id: int) -> bool:
+        """Elimina una operación después de sincronizarla correctamente."""
         connection = get_sqlite_connection()
         cursor = None
 
