@@ -7,10 +7,11 @@ from models.student import Student
 
 class DatabaseConnector(ABC):
     """
-    Define el contrato común de los conectores.
+    Define el contrato común de los conectores
+    de bases de datos.
 
-    Las bases de datos históricas son de solo lectura.
-    Las búsquedas se realizan por nombre.
+    Las bases históricas permiten únicamente
+    operaciones de lectura.
     """
 
     @abstractmethod
@@ -25,18 +26,18 @@ class DatabaseConnector(ABC):
         """
         Busca estudiantes por nombre.
 
-        Devuelve una lista porque puede haber
-        varias coincidencias.
+        Permite obtener varias coincidencias.
         """
         pass
 
 
 class BaseConnector(DatabaseConnector):
     """
-    Implementación reutilizable de las consultas SQL
-    para los conectores de bases de datos históricas.
+    Clase base que implementa las consultas SQL
+    comunes a los conectores.
 
-    Cada conector concreto implementa su conexión.
+    Cada conector debe implementar su propia
+    conexión mediante el método _connect().
     """
 
     @abstractmethod
@@ -49,13 +50,16 @@ class BaseConnector(DatabaseConnector):
     @property
     def placeholder(self) -> str:
         """
-        Marcador utilizado en las consultas SQL.
+        Devuelve el marcador utilizado en SQL.
+
+        JDBC y SQLite: ?
+        MariaDB: %s
         """
         return "?"
 
     def get_students(self) -> list[Student]:
         """
-        Obtiene todos los estudiantes de la base de datos.
+        Obtiene todos los estudiantes de la base.
         """
 
         connection = self._connect()
@@ -95,8 +99,8 @@ class BaseConnector(DatabaseConnector):
         """
         Busca estudiantes por nombre.
 
-        Permite coincidencias parciales
-        sin distinguir mayúsculas y minúsculas.
+        Permite coincidencias parciales sin
+        distinguir mayúsculas y minúsculas.
         """
 
         connection = self._connect()
@@ -139,15 +143,16 @@ class BaseConnector(DatabaseConnector):
     @staticmethod
     def row_to_student(row) -> Student:
         """
-        Convierte el resultado de una consulta
+        Convierte una fila de la base de datos
         en un objeto Student.
 
         Admite filas de tipo tupla y diccionario.
         """
 
         if isinstance(row, dict):
+            get = row.get
 
-            nacimiento = row.get("nacimiento")
+            nacimiento = get("nacimiento")
 
             if nacimiento is not None and not isinstance(
                 nacimiento, date
@@ -157,15 +162,15 @@ class BaseConnector(DatabaseConnector):
                 )
 
             return Student(
-                id=str(row.get("id")),
-                nombre=row.get("nombre"),
-                casa=row.get("casa"),
-                especie=row.get("especie"),
-                genero=row.get("genero"),
+                id=str(get("id")),
+                nombre=get("nombre"),
+                casa=get("casa"),
+                especie=get("especie"),
+                genero=get("genero"),
                 nacimiento=nacimiento,
-                nacionalidad=row.get("nacionalidad"),
-                patronus=row.get("patronus"),
-                imagen=row.get("imagen")
+                nacionalidad=get("nacionalidad"),
+                patronus=get("patronus"),
+                imagen=get("imagen"),
             )
 
         nacimiento = row[5]
@@ -186,5 +191,5 @@ class BaseConnector(DatabaseConnector):
             nacimiento=nacimiento,
             nacionalidad=row[6],
             patronus=row[7],
-            imagen=row[8]
+            imagen=row[8],
         )

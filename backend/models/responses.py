@@ -1,3 +1,4 @@
+
 from pydantic import BaseModel
 
 from models.student import Student

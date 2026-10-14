@@ -15,43 +15,60 @@ CASAS_HISTORICAS_SOLO_LECTURA = {
 
 class StudentService:
     """
-    Servicio encargado de gestionar las operaciones
+    Capa de servicio encargada de gestionar las operaciones
     relacionadas con los estudiantes.
+
+    Actúa como intermediario entre la API y el repositorio.
     """
 
     def __init__(self):
+        """
+        Inicializa el servicio de estudiantes.
+        """
         self.repository = StudentRepository()
 
     @staticmethod
     def generate_student_id() -> str:
         """
-        Genera un identificador único para un estudiante.
+        Genera un identificador único para un nuevo estudiante.
+
+        Returns:
+            str: Identificador UUID generado.
         """
         return str(uuid.uuid4())
 
     def get_all_students(self):
         """
-        Obtiene todos los estudiantes almacenados
-        actualmente en la caché.
+        Obtiene todos los estudiantes disponibles
+        mediante el repositorio.
         """
         return self.repository.get_all_students()
 
     def get_student(self, id: str):
         """
         Obtiene un estudiante mediante su ID interno.
-        Se utiliza para identificar registros en el CRUD.
+
+        Se mantiene para identificar los registros
+        utilizados en las operaciones CRUD.
         """
         if not id:
             raise ValueError("El identificador es obligatorio")
 
         return self.repository.get_student(id)
 
-    def search_students_by_name(self, nombre: str):
+    def search_students_by_name(self, nombre: str) -> list[Student]:
         """
         Busca estudiantes por nombre.
 
-        Primero consulta SQLite y, si no encuentra
-        resultados, busca en las bases de origen.
+        El repositorio consulta primero la caché SQLite.
+        Si no encuentra resultados, consulta las bases
+        de datos históricas.
+
+        Args:
+            nombre (str): Nombre o parte del nombre.
+
+        Returns:
+            list[Student]: Estudiantes encontrados.
         """
         if not nombre or not nombre.strip():
             raise ValueError("El nombre es obligatorio")
@@ -62,10 +79,12 @@ class StudentService:
 
     def create_student(self, student: StudentCreate) -> Student:
         """
-        Crea un estudiante en el sistema central.
+        Crea un nuevo estudiante.
 
-        No permite registrar nuevos alumnos
+        No permite registrar nuevos estudiantes
         en las casas históricas.
+
+        El ID se genera automáticamente.
         """
         casa_normalizada = student.casa.strip().lower()
 
@@ -87,9 +106,9 @@ class StudentService:
 
     def update_student(self, id: str, student: Student):
         """
-        Actualiza los datos de un estudiante.
+        Actualiza un estudiante existente.
 
-        No permite modificar estudiantes históricos.
+        No permite modificar registros históricos.
         """
         if not id:
             raise ValueError("El identificador es obligatorio")
@@ -106,7 +125,8 @@ class StudentService:
         if casa_actual in CASAS_HISTORICAS_SOLO_LECTURA:
             raise ValueError(
                 f"Acceso denegado: Los registros de "
-                f"{existente.casa} son de solo lectura."
+                f"{existente.casa} son de solo lectura "
+                f"y no se pueden modificar."
             )
 
         return self.repository.update_student(id, student)
@@ -137,23 +157,36 @@ class StudentService:
         """
         Obtiene todos los estudiantes de una base
         de datos específica.
+
+        Args:
+            connector (str): Nombre del conector.
+
+        Returns:
+            list[Student]: Estudiantes encontrados.
         """
         if not connector or not connector.strip():
             raise ValueError("El conector es obligatorio")
 
         return self.repository.get_students_from_connector(
-            connector
+            connector.strip()
         )
 
     def get_student_from_connector(
         self,
         connector: str,
         nombre: str
-    ):
+    ) -> list[Student]:
         """
         Busca estudiantes por nombre en un conector.
 
         Permite coincidencias parciales.
+
+        Args:
+            connector (str): Nombre del conector.
+            nombre (str): Nombre o parte del nombre.
+
+        Returns:
+            list[Student]: Estudiantes encontrados.
         """
         if not connector or not connector.strip():
             raise ValueError("El conector es obligatorio")
@@ -162,6 +195,6 @@ class StudentService:
             raise ValueError("El nombre es obligatorio")
 
         return self.repository.get_student_from_connector(
-            connector,
+            connector.strip(),
             nombre.strip()
         )
