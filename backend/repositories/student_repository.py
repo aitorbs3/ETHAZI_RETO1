@@ -321,9 +321,17 @@ class StudentRepository:
             conn.execute("BEGIN")
 
             row = conn.execute(
-                "SELECT nombre FROM alumnos WHERE id = ?",
+                "SELECT nombre, casa FROM alumnos WHERE id = ?",
                 (student_id,),
             ).fetchone()
+
+            if row is None:
+                raise ValueError("No se encontró el alumno seleccionado.")
+
+            if (row["casa"] or "").strip().casefold() != "hogwarths":
+                raise ValueError(
+                    "Solo se pueden modificar alumnos nuevos de Hogwarths."
+                )
 
             if row is None:
                 raise ValueError("No se encontró el alumno seleccionado.")

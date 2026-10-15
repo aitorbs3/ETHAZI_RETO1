@@ -93,6 +93,18 @@ class StudentService:
         if alumno_actual is None:
             raise ValueError("No se encontró el alumno seleccionado.")
 
+        # Solo se pueden modificar alumnos nuevos de Hogwarths
+        if (alumno_actual.casa or "").strip().casefold() != "hogwarths":
+            raise ValueError(
+                "Solo se pueden modificar alumnos nuevos de Hogwarths."
+            )
+
+        # No se permite cambiar la casa del alumno
+        if (student_data.casa or "").strip().casefold() != "hogwarths":
+            raise ValueError(
+                "No se puede cambiar la casa de un alumno nuevo."
+            )
+
         self._validar_nombre(student_data.nombre)
 
         self._validar_casa_historica(alumno_actual.casa)
@@ -100,11 +112,13 @@ class StudentService:
 
         student_data.id = student_id
 
+        # Actualizar alumno en SQLite
         actualizado = self.repository.update_student_by_id(
             student_id,
             student_data,
         )
 
+        # Intentar sincronizar con MariaDB
         self._intentar_sincronizar()
 
         return actualizado
