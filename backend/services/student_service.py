@@ -109,18 +109,34 @@ class StudentService:
 
         return actualizado
 
+
     def delete_student_by_id(self, student_id: str) -> dict:
+        """Elimina únicamente alumnos nuevos de Hogwarths."""
+
         if not student_id or not student_id.strip():
             raise ValueError("El identificador del alumno es obligatorio.")
 
+        student_id = student_id.strip()
+
+        # Obtener el alumno seleccionado por su ID
         alumno = self.repository.get_student(student_id)
 
         if alumno is None:
             raise ValueError("No se encontró el alumno seleccionado.")
 
-        self._validar_casa_historica(alumno.casa)
+        # Solo se permiten alumnos nuevos de Hogwarths
+        if (alumno.casa or "").strip().casefold() != "hogwarths":
+            raise ValueError(
+                "Solo se pueden eliminar alumnos nuevos de Hogwarths."
+            )
 
-        self.repository.delete_student_by_id(student_id)
+        # Eliminar de SQLite y registrar DELETE pendiente
+        eliminado = self.repository.delete_student_by_id(student_id)
+
+        if not eliminado:
+            raise RuntimeError("No se pudo eliminar el alumno.")
+
+        # Intentar sincronizar el borrado con MariaDB
         resultado_sync = self._intentar_sincronizar()
 
         return {
@@ -128,6 +144,7 @@ class StudentService:
             "student_id": student_id,
             "sincronizacion": resultado_sync,
         }
+
 
     def get_students_from_connector(
         self,

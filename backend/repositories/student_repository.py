@@ -379,8 +379,13 @@ class StudentRepository:
 
         return student
 
+
     def delete_student_by_id(self, student_id: str) -> bool:
-        """Elimina exclusivamente el alumno identificado por UUID."""
+        """
+        Elimina por ID únicamente alumnos nuevos de Hogwarths.
+        Registra la operación pendiente de sincronización con MariaDB.
+        """
+
         if not student_id:
             raise ValueError("El identificador del alumno es obligatorio")
 
@@ -388,12 +393,22 @@ class StudentRepository:
             conn.execute("BEGIN")
 
             row = conn.execute(
-                "SELECT nombre FROM alumnos WHERE id = ?",
+                """
+                SELECT nombre, casa
+                FROM alumnos
+                WHERE id = ?
+                """,
                 (student_id,),
             ).fetchone()
 
             if row is None:
                 raise ValueError("No se encontró el alumno seleccionado.")
+
+            # Impedir el borrado de alumnos históricos
+            if (row["casa"] or "").strip().casefold() != "hogwarths":
+                raise ValueError(
+                    "Solo se pueden eliminar alumnos nuevos de Hogwarths."
+                )
 
             nombre_real = row["nombre"]
 
@@ -405,10 +420,12 @@ class StudentRepository:
             if cursor.rowcount != 1:
                 raise RuntimeError("No se pudo eliminar el alumno.")
 
+            # Registrar operación para sincronizar con MariaDB
             conn.execute(
                 """
                 INSERT INTO pending_operations (
-                    operation, student_id, nombre, nombre_editado, payload
+                    operation, student_id, nombre,
+                    nombre_editado, payload
                 )
                 VALUES (?, ?, ?, ?, ?)
                 """,
@@ -418,6 +435,7 @@ class StudentRepository:
             conn.commit()
 
         return True
+
 
     # ==========================================================
     # CONECTORES DE ORIGEN: SOLO LECTURA

@@ -38,20 +38,11 @@ def get_sqlite_connection_legacy():
 
 
 
+
 def init_sqlite_db():
     """
-    Inicializa las tablas necesarias para SQLite.
-
-    cache_students:
-        Caché de las cuatro bases históricas.
-
-    alumnos:
-        Alumnos nuevos gestionados localmente.
-
-    pending_operations:
-        Operaciones pendientes de sincronizar
-        con MariaDB.
-
+    Crea automáticamente las tablas SQLite necesarias.
+    Actualiza las columnas de sincronización si faltan.
     No elimina datos existentes.
     """
 
@@ -59,7 +50,6 @@ def init_sqlite_db():
 
     try:
         with conn:
-
             # Caché de alumnos históricos
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS cache_students (
@@ -75,12 +65,12 @@ def init_sqlite_db():
                 )
             """)
 
-            # Alumnos nuevos
+            # Alumnos nuevos de Hogwarths
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS alumnos (
                     id TEXT PRIMARY KEY NOT NULL,
                     nombre TEXT NOT NULL,
-                    casa TEXT,
+                    casa TEXT NOT NULL,
                     especie TEXT,
                     genero TEXT,
                     nacimiento TEXT,
@@ -90,7 +80,7 @@ def init_sqlite_db():
                 )
             """)
 
-            # Cola de sincronización con MariaDB
+            # Operaciones pendientes
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS pending_operations (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,9 +89,33 @@ def init_sqlite_db():
                     nombre TEXT,
                     nombre_editado TEXT,
                     payload TEXT,
-                    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    last_error TEXT
                 )
             """)
+
+            # Migración automática para bases antiguas
+            columnas = {
+                row["name"]
+                for row in conn.execute(
+                    "PRAGMA table_info(pending_operations)"
+                )
+            }
+
+            if "attempts" not in columnas:
+                conn.execute("""
+                    ALTER TABLE pending_operations
+                    ADD COLUMN attempts INTEGER NOT NULL DEFAULT 0
+                """)
+
+            if "last_error" not in columnas:
+                conn.execute("""
+                    ALTER TABLE pending_operations
+                    ADD COLUMN last_error TEXT
+                """)
+
+        print("SQLite inicializada correctamente.")
 
     finally:
         conn.close()

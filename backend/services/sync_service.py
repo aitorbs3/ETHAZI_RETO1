@@ -1,4 +1,4 @@
-from connectors.mariadb_connector import MariaDBConnector
+from connectors.mariadb_connector import MariaDBConnector, init_mariadb_db
 from backend.repositories.pending_operations_repository import (
     PendingOperationsRepository,
 )
@@ -12,6 +12,9 @@ class SyncService:
 
     def sincronizar_pendientes(self) -> dict:
         operaciones = self.pending_repository.get_pending_operations()
+
+        if operaciones:
+            init_mariadb_db()
 
         resultado = {
             "procesadas": 0,
