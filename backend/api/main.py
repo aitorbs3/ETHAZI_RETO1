@@ -7,6 +7,7 @@ from api.students import router as students_router
 from connectors.sqlite_connector import init_sqlite_db
 from connectors.mariadb_connector import init_mariadb_db
 from services.sync_service import SyncService
+from services.bootstrap_service import inicializar_bases_historicas
 
 app = FastAPI(
     title="R01 - Sistema de Interconexión de Datos",
@@ -27,6 +28,10 @@ def startup_event():
 
     # SQLite siempre debe estar disponible
     init_sqlite_db()
+
+    # Importa las cuatro casas solo si sus tablas están vacías o no existen.
+    # Cada base se inicializa independientemente; los errores quedan en logs.
+    inicializar_bases_historicas()
 
     # MariaDB puede estar temporalmente desconectada
     try:

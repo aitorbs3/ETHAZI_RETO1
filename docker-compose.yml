@@ -14,7 +14,11 @@ services:
     environment:
 
       # SQLite: misma base de datos que Windows
+      ETHAZI_SQL_DIR: /app/data/sql
       SQLITE_DATABASE: /app/data/databases/sqlite_reto.db
+      DERBY_DATABASE: /app/data/databases/derby/gryffindor
+      H2_DATABASE: /app/data/databases/h2/hufflepuff/hufflepuff
+      HSQLDB_DATABASE: /app/data/databases/hsqldb/slytherin
 
       # MariaDB
       MARIADB_HOST: mariadb
@@ -26,6 +30,7 @@ services:
       # Oracle
       ORACLE_HOST: oracle
       ORACLE_PORT: "1521"
+      ORACLE_SERVICE_NAME: ${ORACLE_SERVICE_NAME:-FREEPDB1}
       ORACLE_USER: ${ORACLE_USER}
       ORACLE_PASSWORD: ${ORACLE_PASSWORD}
 

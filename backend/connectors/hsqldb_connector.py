@@ -7,60 +7,33 @@ from connectors.base import BaseConnector
 from utils.jvm import iniciar_jvm
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+
+
 def conectar_hsqldb():
-    """
-    Crea una conexión con la base de datos HSQLDB configurada.
+    """Abre HSQLDB en Windows/Linux, siempre en <directorio>/slytherin."""
+    carpeta = Path(obtener_variable("HSQLDB_DATABASE"))
+    if not carpeta.is_absolute():
+        carpeta = PROJECT_ROOT / carpeta
+    carpeta.mkdir(parents=True, exist_ok=True)
+    ruta_bd = carpeta / "slytherin"
 
-    La conexión utiliza el driver JDBC de HSQLDB y el fichero JAR
-    incluido dentro del proyecto.
-
-    Returns:
-        Connection: conexión activa con la base de datos HSQLDB.
-    """
-
-    # Obtenemos la carpeta backend del proyecto.
-    backend_dir = Path(__file__).resolve().parent.parent
-
-    # Localizamos la carpeta donde se encuentra el driver JDBC de HSQLDB.
-    drivers_dir = backend_dir / "drivers" / "hsqldb"
-
-    # Obtenemos desde el archivo .env la ubicación de la base de datos.
-    hsqldb_database = obtener_variable("HSQLDB_DATABASE")
-
-    # Indicamos el JAR que contiene el driver JDBC de HSQLDB.
-    jars = [
-        str(drivers_dir / "hsqldb.jar"),
-    ]
-
-    # Nombre de la clase del driver JDBC de HSQLDB.
-    driver = "org.hsqldb.jdbc.JDBCDriver"
-
-    # Construimos la URL JDBC utilizando la ruta configurada.
-    url = f"jdbc:hsqldb:file:{hsqldb_database}\\slytherin"
-
-    # Nos aseguramos de que la JVM tenga cargados los drivers JDBC.
+    jar = BACKEND_DIR / "drivers" / "hsqldb" / "hsqldb.jar"
+    if not jar.is_file():
+        raise FileNotFoundError(f"Driver HSQLDB no encontrado: {jar}")
     iniciar_jvm()
 
-    # Creamos y devolvemos la conexión mediante JayDeBeApi.
     return jaydebeapi.connect(
-        driver,
-        url,
+        "org.hsqldb.jdbc.JDBCDriver",
+        f"jdbc:hsqldb:file:{ruta_bd}",
         ["SA", ""],
-        jars,
+        str(jar),
     )
 
 
 class HSQLDBConnector(BaseConnector):
-    """
-    Conector de HSQLDB.
-
-    HSQLDB se utiliza como base de datos de origen
-    y solamente permite operaciones de lectura.
-    """
+    """Solo lectura para los alumnos históricos de Slytherin."""
 
     def _connect(self):
-        """
-        Devuelve una conexión con HSQLDB.
-        """
-
         return conectar_hsqldb()
