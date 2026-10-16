@@ -2,7 +2,7 @@ from datetime import datetime
 
 from models.student import Student, StudentCreate
 from repositories.student_repository import StudentRepository
-from backend.services.sync_service import SyncService
+from services.sync_service import SyncService
 
 
 CASAS_HISTORICAS_SOLO_LECTURA = {

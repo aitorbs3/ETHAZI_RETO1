@@ -1,5 +1,5 @@
 from connectors.mariadb_connector import MariaDBConnector, init_mariadb_db
-from backend.repositories.pending_operations_repository import (
+from repositories.pending_operations_repository import (
     PendingOperationsRepository,
 )
 from models.student import Student
