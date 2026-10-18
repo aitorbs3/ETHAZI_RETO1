@@ -3,8 +3,10 @@
 -- Se omiten alias, patronus_origen y wiki.
 -- Las fechas aproximadas del CSV se convierten a una fecha estimada de tipo DATE.
 
+-- Este script reinicia la tabla y debe ejecutarse solo en una carga controlada.
 DROP TABLE IF EXISTS alumnos;
 
+-- La estructura expone las mismas columnas que las demás casas históricas.
 CREATE TABLE alumnos (
     id VARCHAR2(36) PRIMARY KEY,
     nombre VARCHAR2(150) NOT NULL,
@@ -17,6 +19,7 @@ CREATE TABLE alumnos (
     imagen VARCHAR2(1000)
 );
 
+-- Los INSERT siguientes cargan el conjunto histórico de Ravenclaw.
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('227178dd-3a70-4511-bc3f-3a73915e4b6b', 'Alannis', 'Ravenclaw', 'Human', 'Female', DATE '1985-08-31', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/d/d5/Alannis.jpg');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('720d61e6-1a6b-4857-9700-d6dc2c830e9b', 'Alannis Shepley', 'Ravenclaw', 'Human', 'Female', DATE '1982-08-31', 'British or Irish', NULL, NULL);
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('5d31f206-78fe-454e-a399-7937cc8131ce', 'Amanda', 'Ravenclaw', 'Human', 'Female', DATE '1980-03-01', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/1/17/Amanda4.jpg');

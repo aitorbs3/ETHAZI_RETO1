@@ -1,3 +1,5 @@
+"""Acceso a alumnos locales, caché y bases históricas de solo lectura."""
+
 import json
 import uuid
 from datetime import date
@@ -8,6 +10,8 @@ from connectors.sqlite_connector import get_sqlite_connection
 
 
 class StudentRepository:
+    """Centraliza consultas, escrituras locales y cola de sincronización."""
+
     SOURCE_CONNECTORS = ("derby", "h2", "hsqldb", "oracle")
 
     # ==========================================================
@@ -15,6 +19,8 @@ class StudentRepository:
     # ==========================================================
 
     def get_student_from_cache(self, student_id: str) -> Student | None:
+        """Busca en caché un alumno por su identificador."""
+        # La clave primaria hace que la lectura devuelva como máximo una fila.
         query = """
             SELECT id, nombre, casa, especie, genero,
                    nacimiento, nacionalidad, patronus, imagen
@@ -27,6 +33,8 @@ class StudentRepository:
         return self._row_to_student(row) if row else None
 
     def get_students_from_cache(self) -> list[Student]:
+        """Devuelve todos los alumnos almacenados en la caché SQLite."""
+        # El modelo común oculta las diferencias entre sqlite3.Row y otros drivers.
         query = """
             SELECT id, nombre, casa, especie, genero,
                    nacimiento, nacionalidad, patronus, imagen
@@ -38,6 +46,8 @@ class StudentRepository:
         return [self._row_to_student(row) for row in rows]
 
     def search_students_in_cache(self, name: str) -> list[Student]:
+        """Busca coincidencias parciales por nombre en la caché."""
+        # LIKE permite reutilizar el mismo comportamiento de búsqueda parcial.
         query = """
             SELECT id, nombre, casa, especie, genero,
                    nacimiento, nacionalidad, patronus, imagen
@@ -50,6 +60,7 @@ class StudentRepository:
         return [self._row_to_student(row) for row in rows]
 
     def save_student_to_cache(self, student: Student) -> Student:
+        """Inserta o actualiza en caché el alumno recibido."""
         query = """
             INSERT INTO cache_students (
                 id, nombre, casa, especie, genero, nacimiento,
@@ -67,6 +78,7 @@ class StudentRepository:
                 imagen = excluded.imagen
         """
 
+        # La caché persiste las fechas de Python como texto ISO en SQLite.
         nacimiento = (
             student.nacimiento.isoformat()
             if student.nacimiento is not None
@@ -93,10 +105,14 @@ class StudentRepository:
         return student
 
     def save_students_to_cache(self, students: list[Student]) -> None:
+        """Guarda en caché cada alumno de la colección."""
+        # Se reutiliza el upsert individual para mantener una sola regla de escritura.
         for student in students:
             self.save_student_to_cache(student)
 
     def delete_student_from_cache(self, student_id: str) -> bool:
+        """Elimina un alumno de la caché e indica si existía."""
+        # rowcount indica si se encontró una fila con ese ID.
         with get_sqlite_connection() as conn:
             cursor = conn.execute(
                 "DELETE FROM cache_students WHERE id = ?",
@@ -123,6 +139,8 @@ class StudentRepository:
         locales = [self._row_to_student(row) for row in rows]
         cache = self.get_students_from_cache()
 
+        # El ID unifica ambas colecciones; lo local prevalece sobre una copia
+        # cacheada del mismo registro.
         resultado = {student.id: student for student in cache}
         resultado.update({student.id: student for student in locales})
 
@@ -130,6 +148,7 @@ class StudentRepository:
 
     def get_student(self, student_id: str) -> Student | None:
         """Busca por UUID primero en los alumnos locales y después en caché."""
+        # La tabla alumnos tiene prioridad porque contiene las escrituras locales.
         with get_sqlite_connection() as conn:
             row = conn.execute(
                 """
@@ -171,6 +190,8 @@ class StudentRepository:
         if rows:
             return self._row_to_student(rows[0])
 
+        # Para no abrir conexiones a los orígenes, esta resolución por nombre
+        # se limita a los datos locales y a los que ya están cacheados.
         coincidencias = [
             student
             for student in self.get_students_from_cache()
@@ -205,6 +226,7 @@ class StudentRepository:
                 (f"%{name}%",),
             ).fetchall()
 
+        # Combinar por ID evita duplicados entre datos locales y cacheados.
         for row in rows:
             student = self._row_to_student(row)
             encontrados[student.id] = student
@@ -212,10 +234,13 @@ class StudentRepository:
         for student in self.search_students_in_cache(name):
             encontrados[student.id] = student
 
-        # Si SQLite ya tiene resultados, no consultamos las fuentes externas.
+        # Si SQLite ya tiene resultados, no consultamos las fuentes externas:
+        # la copia local es más rápida y evita consultas remotas innecesarias.
         if encontrados:
             return list(encontrados.values())
 
+        # Sin coincidencias locales, se consultan las casas históricas y se
+        # combinan sus resultados usando el ID como clave.
         encontrados_fuentes: dict[str, Student] = {}
 
         for connector_name in self.SOURCE_CONNECTORS:
@@ -227,8 +252,10 @@ class StudentRepository:
                     encontrados_fuentes[student.id] = student
 
             except Exception as exc:
+                # Un origen no disponible no impide consultar los restantes.
                 print(f"No se pudo consultar {connector_name}: {exc}")
 
+        # Guardar el resultado permite responder desde SQLite en búsquedas futuras.
         estudiantes = list(encontrados_fuentes.values())
 
         if estudiantes:
@@ -242,12 +269,16 @@ class StudentRepository:
 
     @staticmethod
     def _student_payload(student: Student) -> dict:
+        """Serializa un alumno a un diccionario compatible con JSON."""
+        # mode="json" convierte date y demás tipos especiales a valores serializables.
         datos = student.model_dump(mode="json")
         datos["id"] = student.id
         return datos
 
     def create_student(self, student: Student) -> Student:
         """Crea el alumno y encola CREATE dentro de una transacción SQLite."""
+        # El UUID se genera en el backend para que todos los sistemas usen el
+        # mismo identificador durante la sincronizacion.
         if not student.id:
             student.id = str(uuid.uuid4())
 
@@ -262,6 +293,8 @@ class StudentRepository:
             ensure_ascii=False,
         )
 
+        # Alta y cola comparten transacción: el cambio local no puede quedar
+        # confirmado si no se registró también para sincronizarse.
         with get_sqlite_connection() as conn:
             conn.execute("BEGIN")
 
@@ -317,6 +350,7 @@ class StudentRepository:
             else None
         )
 
+        # El estado actualizado y el evento de sincronización se confirman juntos.
         with get_sqlite_connection() as conn:
             conn.execute("BEGIN")
 
@@ -397,6 +431,8 @@ class StudentRepository:
         if not student_id:
             raise ValueError("El identificador del alumno es obligatorio")
 
+        # Borrar y encolar DELETE en una sola transacción permite propagarlo
+        # a MariaDB aunque la conexión remota falle durante esta solicitud.
         with get_sqlite_connection() as conn:
             conn.execute("BEGIN")
 
@@ -453,6 +489,8 @@ class StudentRepository:
         self,
         connector_name: str,
     ) -> list[Student]:
+        """Obtiene y normaliza todos los alumnos de una fuente histórica."""
+        # La fábrica valida el nombre y devuelve la implementación correspondiente.
         connector = get_connector(connector_name)
 
         return [
@@ -465,6 +503,8 @@ class StudentRepository:
         connector_name: str,
         name: str,
     ) -> list[Student]:
+        """Busca y normaliza alumnos por nombre en una fuente histórica."""
+        # Se mantiene la búsqueda en la fuente indicada, sin consultar otras casas.
         connector = get_connector(connector_name)
 
         return [
@@ -478,6 +518,8 @@ class StudentRepository:
 
     @staticmethod
     def _row_to_student(row) -> Student:
+        """Convierte una fila de SQLite en el modelo común Student."""
+        # SQLite devuelve la fecha como texto; el modelo común espera date.
         nacimiento = row["nacimiento"]
 
         if nacimiento and isinstance(nacimiento, str):
@@ -497,6 +539,8 @@ class StudentRepository:
 
     @staticmethod
     def _ensure_student(student) -> Student:
+        """Normaliza una instancia o diccionario al modelo Student."""
+        # Se aceptan las dos representaciones emitidas por los conectores.
         if isinstance(student, Student):
             return student
 

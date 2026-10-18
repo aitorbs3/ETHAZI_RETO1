@@ -1,3 +1,6 @@
+-- Esquema local de alumnos para la aplicación y el almacenamiento SQLite.
+-- La tabla de caché se inicializa aparte; aquí se define también la cola local.
+
 CREATE TABLE IF NOT EXISTS alumnos (
     id VARCHAR(50) PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,

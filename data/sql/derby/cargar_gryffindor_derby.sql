@@ -4,6 +4,7 @@
 -- Columnas excluidas: alias, patronus_origen, wiki.
 -- NACIMIENTO es DATE y las fechas imprecisas se han estimado.
 
+-- Definición del esquema común consumido por el conector de lectura.
 CREATE TABLE alumnos (
     id VARCHAR(36) PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -16,6 +17,7 @@ CREATE TABLE alumnos (
     imagen VARCHAR(1000)
 );
 
+-- Cada fila conserva el ID de origen y los campos normalizados del alumno.
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('a08b9ed6-db9e-4085-bbf1-b2ae58aa26da', 'Aamir Loonat', 'Gryffindor', 'Human', 'Male', DATE('1982-08-31'), 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/c/cd/Aamir_Loonat.png');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('753c334d-1782-469b-90f4-66144507ee71', 'Aberforth Dumbledore', 'Gryffindor', 'Human', 'Male', DATE('1884-03-01'), 'English', 'Goat', 'https://static.wikia.nocookie.net/harrypotter/images/4/40/Aberforth_Dumbledore.jpg');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('978e92b7-47ca-4452-8350-9d7c5d6f1278', 'Abigail Grey', 'Gryffindor', 'Human (werewolf)', 'Female', DATE('1997-03-02'), 'British or Irish', 'Wolf', 'https://static.wikia.nocookie.net/harrypotter/images/a/af/Abigail_Grey_MA.jpeg');

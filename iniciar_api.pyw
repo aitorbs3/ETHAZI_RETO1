@@ -1,10 +1,13 @@
 
+"""Inicia la API local en Windows y redirige su salida a un archivo de log."""
+
 import os
 import sys
 import traceback
 from pathlib import Path
 
-# Localizar automáticamente el proyecto
+# Las rutas parten de este lanzador para no depender del directorio actual
+# desde el que Windows abra el acceso directo.
 ROOT = Path(__file__).resolve().parent
 BACKEND = ROOT / "backend"
 
@@ -12,7 +15,8 @@ BACKEND = ROOT / "backend"
 LOGS = ROOT / "logs"
 LOGS.mkdir(exist_ok=True)
 
-# Guardar los mensajes sin abrir una consola
+# El buffer por línea mantiene el registro actualizado mientras Uvicorn corre
+# en segundo plano y el archivo se abre sin mostrar una ventana de consola.
 registro = open(
     LOGS / "api.log",
     "a",
@@ -23,7 +27,7 @@ registro = open(
 sys.stdout = registro
 sys.stderr = registro
 
-# Preparar directorio e importaciones
+# Uvicorn importa api.main desde backend; se prepara la ruta antes del arranque.
 os.chdir(ROOT)
 sys.path.insert(0, str(BACKEND))
 
@@ -38,6 +42,7 @@ try:
     )
 
 except Exception:
+    # Guardar el traceback completo para diagnosticar fallos de inicio.
     traceback.print_exc()
 
 finally:

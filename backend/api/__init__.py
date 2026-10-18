@@ -1,0 +1,1 @@
+"""Rutas HTTP y composición de la aplicación FastAPI."""

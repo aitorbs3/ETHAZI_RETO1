@@ -3,8 +3,10 @@
 -- Columnas excluidas: alias, patronus_origen, wiki.
 -- NACIMIENTO es DATE NOT NULL; las fechas imprecisas se han estimado.
 
+-- Este script recrea la tabla: usarlo solo en la carga manual inicial.
 DROP TABLE IF EXISTS alumnos;
 
+-- El esquema comparte nombres de columna con el resto de conectores.
 CREATE TABLE alumnos (
     id VARCHAR(36) PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -17,6 +19,7 @@ CREATE TABLE alumnos (
     imagen VARCHAR(1000)
 );
 
+-- Los INSERT siguientes cargan el conjunto histórico de Hufflepuff.
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('e2f2517b-af15-4d76-b801-48b0086e5819', 'Abraham Grimblehawk', 'Hufflepuff', 'Human', 'Male', DATE '1980-07-01', 'British or Irish', NULL, NULL);
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('f2607bff-7dda-4505-b866-4a6f002b4791', 'Adelaide Oakes', 'Hufflepuff', 'Human', 'Female', DATE '1875-03-02', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/b/ba/Adelaide_Oakes_-_HL.png');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('d2c9328d-a29c-4e21-a615-4e50cc8279a4', 'Adrian Speke', 'Hufflepuff', 'Human', 'Male', DATE '1982-08-31', 'British or Irish', NULL, NULL);

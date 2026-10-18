@@ -1,0 +1,1 @@
+"""Servicios con lógica de negocio, inicialización y sincronización."""

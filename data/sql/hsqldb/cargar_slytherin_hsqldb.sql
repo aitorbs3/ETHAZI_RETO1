@@ -3,8 +3,10 @@
 -- Columnas excluidas: alias, patronus_origen, wiki.
 -- NACIMIENTO es DATE NOT NULL; las fechas imprecisas se han estimado.
 
+-- Este script recrea la tabla: usarlo solo en la carga manual inicial.
 DROP TABLE IF EXISTS alumnos;
 
+-- El esquema se mantiene compatible con el modelo común del backend.
 CREATE TABLE alumnos (
     id VARCHAR(36) PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -17,6 +19,7 @@ CREATE TABLE alumnos (
     imagen VARCHAR(1000)
 );
 
+-- Los INSERT siguientes cargan los registros históricos de Slytherin.
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('c7b3896b-86d1-4da7-a073-9e5832722f1e', 'Abigail Pugh', 'Slytherin', 'Human', 'Female', DATE '1982-08-31', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/2/2f/Abigail_Pugh.png');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('ada593b0-dabf-463f-9660-f9c011c81c6d', 'Abraham Ronen', 'Slytherin', 'Human', 'Male', DATE '1866-07-01', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/e/ee/Abraham_Ronen.png');
 INSERT INTO alumnos (id, nombre, casa, especie, genero, nacimiento, nacionalidad, patronus, imagen) VALUES ('981e00bd-ac59-424e-8278-f60c17f5894a', 'Abraxas Malfoy', 'Slytherin', 'Human', 'Male', DATE '1953-07-01', 'British or Irish', NULL, 'https://static.wikia.nocookie.net/harrypotter/images/0/01/AbraxasMalfoy.png');
