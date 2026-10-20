@@ -7,6 +7,9 @@
     <string name="config_api">Configure API</string>
     <string name="test_connection">Test connection</string>
     <string name="last_search">Last search</string>
+    <string name="local_cache_unavailable">Cache unavailable</string>
+    <string name="offline_unavailable">No students are stored for offline access yet</string>
+    <string name="offline_student_unavailable">This student is not saved for offline access yet</string>
     <string name="local_cache_enabled">Local cache enabled</string>
     <string name="offline_available">Previously viewed students available offline</string>
     <string name="student_preview">STUDENT PREVIEW</string>

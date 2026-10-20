@@ -21,9 +21,9 @@ class StudentRepository(
 
         val cached = studentDao.getStudentById(trimmed)
             ?: if (!UUID_REGEX.matches(trimmed)) studentDao.getStudentByName(trimmed) else null
-        // Priorizar SIEMPRE los datos de Room, incluso si la foto está vacía.
-        // La ausencia de foto no debe obligar a usar la red ni demorar el modo offline.
-        if (cached != null) return cached
+        // Migraciones desde versiones anteriores de la app pueden dejar la URL
+        // de la foto vacía: consultarla una vez de nuevo si hay conexión.
+        if (cached != null && !cached.imageUrl.isNullOrBlank()) return cached
 
         // La lista de selección pasa un UUID: solicitar exactamente ese alumno.
         // Los nombres se resuelven por búsqueda, pero nunca deben usarse para elegir

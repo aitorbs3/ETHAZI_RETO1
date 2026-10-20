@@ -7,6 +7,9 @@
     <string name="config_api">Konfiguratu APIa</string>
     <string name="test_connection">Probatu konexioa</string>
     <string name="last_search">Azken bilaketa</string>
+    <string name="local_cache_unavailable">Cachea ez dago erabilgarri</string>
+    <string name="offline_unavailable">Oraindik ez dago konexiorik gabe erabiltzeko ikaslerik gordeta</string>
+    <string name="offline_student_unavailable">Ikasle hau ez dago oraindik konexiorik gabe erabiltzeko gordeta</string>
     <string name="local_cache_enabled">Tokiko cachea aktibatuta</string>
     <string name="offline_available">Aurrez kontsultatutako ikasleak konexiorik gabe eskuragarri</string>
     <string name="student_preview">IKASLEAREN AURREBISTA</string>

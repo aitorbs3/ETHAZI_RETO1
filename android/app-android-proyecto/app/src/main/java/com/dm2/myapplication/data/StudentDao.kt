@@ -23,9 +23,9 @@ interface StudentDao {
     @Query("SELECT * FROM students_table WHERE name LIKE '%' || :studentName || '%' LIMIT 1")
     suspend fun getStudentByName(studentName: String): StudentEntity?
 
-    /** Devuelve TODAS las coincidencias locales, sin perder homónimos. */
-    @Query("SELECT * FROM students_table WHERE LOWER(name) LIKE '%' || LOWER(:studentName) || '%' ORDER BY name COLLATE NOCASE")
-    suspend fun getStudentsByName(studentName: String): List<StudentEntity>
+    /** Informa si existe al menos un alumno guardado para uso sin conexión. */
+    @Query("SELECT EXISTS(SELECT 1 FROM students_table)")
+    suspend fun hasCachedStudents(): Boolean
 
     /**
      * Inserta un nuevo estudiante o reemplaza el existente si ya consta en la base de datos (REPLACE).

@@ -28,6 +28,7 @@ import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private var lastSearchUiGeneration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,10 +133,31 @@ class MainActivity : AppCompatActivity() {
         updateLastSearchUI()
     }
 
+    /** Indica si realmente hay datos guardados en Room para consulta sin conexión. */
+    private fun showCacheStatus(available: Boolean, forStudent: Boolean) {
+        binding.tvCacheTitle.setText(
+            if (available) R.string.local_cache_enabled else R.string.local_cache_unavailable
+        )
+        binding.tvCacheDescription.setText(
+            when {
+                available -> R.string.offline_available
+                forStudent -> R.string.offline_student_unavailable
+                else -> R.string.offline_unavailable
+            }
+        )
+        binding.cacheStatusIndicator.setBackgroundResource(
+            if (available) R.drawable.shape_green_dot else R.drawable.shape_gray_dot
+        )
+    }
+
     private fun updateLastSearchUI() {
         val query = lastSearch()
+        val generation = ++lastSearchUiGeneration
         binding.tvLastSearchId.text = query.ifEmpty { getString(R.string.no_past_search) }
         binding.cardLastSearch.isEnabled = query.isNotEmpty()
+
+        // El estado verde solo se muestra tras verificar la persistencia en Room.
+        showCacheStatus(available = false, forStudent = query.isNotEmpty())
 
         // Evitar mostrar al alumno ficticio de la maqueta como si existiera.
         binding.tvPreviewName.text = getString(R.string.no_preview)
@@ -145,20 +167,32 @@ class MainActivity : AppCompatActivity() {
         binding.cardStudentPreview.isEnabled = false
         binding.cardStudentPreview.alpha = 0.75f
         StudentPhotos.load(binding.imgPreview, null)
-        if (query.isEmpty()) return
 
         lifecycleScope.launch {
-            val student = withContext(Dispatchers.IO) {
-                val dao = AppDatabase.getDatabase(applicationContext).studentDao()
-                val selectedId = getSharedPreferences("hogwarts_prefs", MODE_PRIVATE)
-                    .getString("LAST_STUDENT_ID", null)
-                selectedId?.let { dao.getStudentById(it) }
-                    ?: dao.getStudentById(query)
-                    ?: dao.getStudentByName(query)
+            try {
+                val (student, cacheAvailable) = withContext(Dispatchers.IO) {
+                    val dao = AppDatabase.getDatabase(applicationContext).studentDao()
+                    if (query.isEmpty()) {
+                        Pair<StudentEntity?, Boolean>(null, dao.hasCachedStudents())
+                    } else {
+                        val selectedId = getSharedPreferences("hogwarts_prefs", MODE_PRIVATE)
+                            .getString("LAST_STUDENT_ID", null)
+                        val cached = selectedId?.let { dao.getStudentById(it) }
+                            ?: dao.getStudentById(query)
+                            ?: dao.getStudentByName(query)
+                        Pair(cached, cached != null)
+                    }
+                }
+                // La respuesta de una búsqueda anterior no debe sobrescribir la actual.
+                if (generation != lastSearchUiGeneration || query != lastSearch()) return@launch
+                showCacheStatus(available = cacheAvailable, forStudent = query.isNotEmpty())
+                if (student != null) showCachedPreview(student)
+            } catch (e: Exception) {
+                Log.e("HogwartsCache", "No se pudo consultar la caché local", e)
+                if (generation == lastSearchUiGeneration) {
+                    showCacheStatus(available = false, forStudent = query.isNotEmpty())
+                }
             }
-            // Si el usuario escribió otra búsqueda durante la consulta, descartar la anterior.
-            if (query != lastSearch()) return@launch
-            if (student != null) showCachedPreview(student)
         }
     }
 
@@ -232,9 +266,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Consulta primero Room para poder encontrar alumnos ya vistos sin conexión.
-     * Si no existe ninguna coincidencia local, consulta las fuentes de FastAPI
-     * y GUARDA todas las coincidencias válidas, no solo la elegida.
+     * Busca todas las coincidencias en FastAPI. Nunca elige arbitrariamente la primera
+     * si varias personas comparten nombre o coinciden con el texto introducido.
      */
     private fun searchStudents(query: String, showButtons: Boolean) {
         val cleanQuery = query.trim()
@@ -245,74 +278,60 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val students = withContext(Dispatchers.IO) {
-                    val dao = AppDatabase.getDatabase(applicationContext).studentDao()
-                    val locallyCached = if (UUID_REGEX.matches(cleanQuery)) {
-                        listOfNotNull(dao.getStudentById(cleanQuery))
+                    val service = ApiClient.studentService(applicationContext)
+                    val matchesFromServer = if (UUID_REGEX.matches(cleanQuery)) {
+                        listOf(service.getStudentById(cleanQuery))
                     } else {
-                        dao.getStudentsByName(cleanQuery)
-                    }
-
-                    if (locallyCached.isNotEmpty()) {
-                        // Alumnos ya consultados: respuesta inmediata, sin internet.
-                        locallyCached.map { it.toStudentModel() }
-                    } else {
-                        val service = ApiClient.studentService(applicationContext)
-                        val remote = if (UUID_REGEX.matches(cleanQuery)) {
-                            listOf(service.getStudentById(cleanQuery))
-                        } else {
-                            val matches = mutableListOf<Student>()
-                            var answered = 0
-                            var firstError: Exception? = null
+                        // El endpoint /students puede responder solo desde la caché.
+                        // Para no ocultar homónimos, combinar también las cuatro casas.
+                        val matches = mutableListOf<Student>()
+                        var answered = 0
+                        var firstError: Exception? = null
+                        try {
+                            matches += service.getStudents(nombre = cleanQuery)
+                            answered++
+                        } catch (e: Exception) {
+                            firstError = e
+                            Log.w("HogwartsAPI", "No responde /students para '$cleanQuery'", e)
+                        }
+                        for (houseSource in listOf("derby", "h2", "hsqldb", "oracle")) {
                             try {
-                                // El backend puede ignorar ?nombre y devolver TODOS;
-                                // por eso filtramos también en la propia aplicación.
-                                matches += service.getStudents(nombre = cleanQuery)
+                                matches += service.getStudentsFromConnector(houseSource, cleanQuery)
                                 answered++
                             } catch (e: Exception) {
-                                firstError = e
-                                Log.w("HogwartsAPI", "No responde /students para '$cleanQuery'", e)
+                                if (firstError == null) firstError = e
+                                Log.w("HogwartsAPI", "No se pudo consultar $houseSource", e)
                             }
-                            for (houseSource in listOf("derby", "h2", "hsqldb", "oracle")) {
-                                try {
-                                    matches += service.getStudentsFromConnector(houseSource, cleanQuery)
-                                    answered++
-                                } catch (e: Exception) {
-                                    if (firstError == null) firstError = e
-                                    Log.w("HogwartsAPI", "No se pudo consultar $houseSource", e)
-                                }
-                            }
-                            if (answered == 0) {
-                                throw firstError ?: IllegalStateException("FastAPI no responde")
-                            }
-                            matches
                         }
-
-                        val filtered = remote
-                            .filter { student ->
-                                student.id.isNotBlank() &&
-                                    (UUID_REGEX.matches(cleanQuery) ||
-                                        student.name.orEmpty().contains(cleanQuery, ignoreCase = true))
-                            }
-                            .distinctBy { it.id }
-                            .sortedWith(compareBy<Student> { it.name.orEmpty().lowercase() }
-                                .thenBy { it.house.orEmpty().lowercase() })
-
-                        // Persistimos todas las fichas recibidas, aunque el usuario
-                        // todavía no haya elegido una de las coincidencias.
-                        val repository = StudentRepository(service, dao)
-                        filtered.forEach { student -> repository.cacheStudent(student) }
-                        filtered
+                        if (answered == 0) {
+                            throw firstError ?: IllegalStateException("FastAPI no responde")
+                        }
+                        matches
                     }
-                }
 
-                // Actualizar vista previa tras persistir la nueva búsqueda en Room.
-                updateLastSearchUI()
+                    matchesFromServer
+                        .filter { student ->
+                            student.id.isNotBlank() && (
+                                    UUID_REGEX.matches(cleanQuery) ||
+                                            student.name?.contains(
+                                                cleanQuery,
+                                                ignoreCase = true
+                                            ) == true
+                                    )
+                        }
+                        .distinctBy { it.id }
+
+                }
                 when (students.size) {
-                    0 -> Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.no_students, cleanQuery),
-                        Toast.LENGTH_LONG
-                    ).show()
+
+                    0 -> AlertDialog.Builder(this@MainActivity)
+                        .setTitle(R.string.student_not_found)
+                        .setMessage(
+                            getString(R.string.no_students, cleanQuery)
+                        )
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+
                     1 -> openChosenStudent(students[0], showButtons)
                     else -> showStudentChoices(cleanQuery, students, showButtons)
                 }
@@ -329,21 +348,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    /** Adaptar los registros locales al modelo que ya usa el selector de alumnos. */
-    private fun StudentEntity.toStudentModel(): Student = Student(
-        id = id,
-        name = name,
-        alias = alias,
-        house = house,
-        species = species,
-        gender = gender,
-        dateOfBirth = dateOfBirth,
-        nationality = nationality,
-        patronus = patronus,
-        imagen = imageUrl,
-        sourceDatabase = sourceDatabase
-    )
 
     /** Lista desplazable con nombre completo y casa; cada posición conserva su UUID. */
     private fun showStudentChoices(query: String, students: List<Student>, showButtons: Boolean) {
@@ -387,6 +391,9 @@ class MainActivity : AppCompatActivity() {
                     putString("LAST_STUDENT_ID", student.id)
                 }
                 updateLastSearchUI()
+                // Limpiar solo si la búsqueda manual terminó con un alumno elegido
+                // y guardado correctamente; mantener el texto si falla o se cancela.
+                if (showButtons) binding.etSearchQuery.text?.clear()
                 openStudentDetails(student.id, showButtons)
             } catch (e: Exception) {
                 Log.e("HogwartsAPI", "No se pudo guardar la ficha de ${student.name}", e)

@@ -193,7 +193,9 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <!-- Campos visibles en la ficha: casa, especie, género, nacimiento, nacionalidad y patronus -->
+                    <!-- DATOS VISIBLES DEL ALUMNO (6 CAMPOS) -->
+
+
 
                     <!-- 1. Group / House -->
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center_vertical" android:orientation="horizontal">
@@ -254,6 +256,9 @@
                         </LinearLayout>
                     </LinearLayout>
 
+
+
+
                     <!-- Botones Inferiores (Save y New Search) -->
                     <LinearLayout
                         android:id="@+id/layoutActionButtons"
@@ -275,28 +280,25 @@
                             android:textColor="@android:color/white"
                             app:cornerRadius="12dp" />
 
-
-                        <!-- Botón Nueva búsqueda -->
+                        <!-- Botón New Search -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnNewSearch"
                             android:layout_width="0dp"
-                            android:layout_height="56dp"
+                            android:layout_height="54dp"
                             android:layout_marginStart="8dp"
-                            android:layout_weight="1.3"
+                            android:layout_weight="1.4"
+                            android:minWidth="0dp"
                             android:backgroundTint="@color/btn_secondary_bg"
                             android:text="@string/new_search"
                             android:textAllCaps="false"
                             android:textColor="@color/hogwarts_text_title"
-                            android:textSize="14sp"
+                            android:textSize="12sp"
                             android:singleLine="true"
+                            android:maxLines="1"
                             android:gravity="center"
-                            android:paddingHorizontal="6dp"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="11sp"
-                            app:autoSizeMaxTextSize="14sp"
-                            app:autoSizeStepGranularity="1sp"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
                             app:cornerRadius="12dp" />
-
                     </LinearLayout>
 
                 </LinearLayout>

@@ -246,26 +246,29 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tvCacheTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/local_cache_enabled"
+                            android:text="@string/local_cache_unavailable"
                             android:textColor="@color/hogwarts_text_title"
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvCacheDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/offline_available"
+                            android:text="@string/offline_unavailable"
                             android:textColor="@color/hogwarts_text_muted"
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <!-- Punto de estado verde -->
+                    <!-- Estado real de Room: gris al inicio, verde si hay caché. -->
                     <View
+                        android:id="@+id/cacheStatusIndicator"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:background="@drawable/shape_green_dot" />
+                        android:background="@drawable/shape_gray_dot" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
