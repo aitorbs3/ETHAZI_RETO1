@@ -37,7 +37,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -991,15 +990,6 @@ public class MainController {
                     statusLabel.setText(I18n.tr("status.deleted", alumno.getNombre()));
                 })
         );
-    }
-
-    /** Informa de una función que todavía no está disponible en esta versión. */
-    private void mostrarPendiente(String titulo) {
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle(I18n.tr("alert.version.title"));
-        alerta.setHeaderText(titulo);
-        alerta.setContentText(I18n.tr("alert.version.body"));
-        alerta.showAndWait();
     }
 
     /** Muestra un aviso modal para comunicar errores de validación o acciones no permitidas. */
