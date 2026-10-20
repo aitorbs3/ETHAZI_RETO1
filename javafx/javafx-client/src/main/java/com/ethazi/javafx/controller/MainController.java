@@ -68,6 +68,7 @@ import java.util.Objects;
  */
 public class MainController {
 
+    // Contenedores de la vista principal que se reorganizan al cambiar el ancho.
     @FXML private BorderPane rootPane;
     @FXML private HBox headerRow;
     @FXML private VBox headerTitle;
@@ -79,6 +80,8 @@ public class MainController {
     @FXML private VBox mainCenter;
     @FXML private HBox searchRow;
     @FXML private HBox contentRow;
+
+    // Controles de búsqueda y acciones enlazados desde main.fxml.
     @FXML private VBox searchBox;
     @FXML private VBox filterBox;
     @FXML private VBox tableCard;
@@ -91,8 +94,12 @@ public class MainController {
     @FXML private Button helpButton;
     @FXML private Button aboutButton;
     @FXML private Label appInfoLabel;
+
+    // Selector de casa e idioma.
     @FXML private ComboBox<String> houseCombo;
     @FXML private ComboBox<String> languageCombo;
+
+    // Tabla y columnas que presentan los datos recibidos de la API.
     @FXML private TableView<Student> studentsTable;
     @FXML private TableColumn<Student, String> nameColumn;
     @FXML private TableColumn<Student, String> houseColumn;
@@ -101,6 +108,8 @@ public class MainController {
     @FXML private TableColumn<Student, String> birthColumn;
     @FXML private TableColumn<Student, String> nationalityColumn;
     @FXML private TableColumn<Student, String> patronusColumn;
+
+    // Etiquetas e imagen de la ficha asociada al alumno seleccionado.
     @FXML private Label detailName;
     @FXML private Label detailHouse;
     @FXML private Label detailSpecies;
@@ -113,6 +122,7 @@ public class MainController {
     @FXML private Label countLabel;
     @FXML private Label statusLabel;
 
+    // Vistas alternativas y banderas para no reconstruir el diseño en cada cambio de tamaño.
     // En ventanas estrechas, filtros y ficha se colocan debajo del listado.
     private final VBox compactSearchRow = new VBox(12);
     private final VBox compactContentRow = new VBox(16);
@@ -122,10 +132,14 @@ public class MainController {
     private final VBox compactHeader = new VBox(10);
     private final FlowPane compactFooter = new FlowPane(10, 8);
     private double fuenteBase = 15.0;
+
+    // Modelo observable y servicios usados para consultar y mostrar los alumnos.
     private final ApiService apiService = new ApiService();
     private final ObservableList<Student> estudiantes = FXCollections.observableArrayList();
     private final FilteredList<Student> filtrados = new FilteredList<>(estudiantes);
     private final PauseTransition esperaBusqueda = new PauseTransition(Duration.millis(450));
+
+    // Estado de las consultas y operaciones para evitar resultados obsoletos o acciones simultáneas.
     private long versionConsulta = 0;
     private boolean borrandoAlumno = false;
     private boolean editandoAlumno = false;
@@ -140,8 +154,13 @@ public class MainController {
     // Evitar descargar de nuevo las fotografías que ya se han mostrado.
     private final Map<String, Image> cacheImagenes = new HashMap<>();
 
+    /**
+     * Configura columnas, selectores, listeners, accesibilidad, atajos y carga inicial.
+     * JavaFX invoca este método después de inyectar los nodos declarados en el FXML.
+     */
     @FXML
     private void initialize() {
+        // Define de qué propiedad de Student obtiene cada columna el valor que mostrará.
         nameColumn.setCellValueFactory(row -> new ReadOnlyStringWrapper(row.getValue().getNombre()));
         houseColumn.setCellValueFactory(row -> new ReadOnlyStringWrapper(row.getValue().getCasa()));
         speciesColumn.setCellValueFactory(row -> new ReadOnlyStringWrapper(mostrarValor(row.getValue().getEspecie())));
@@ -151,7 +170,7 @@ public class MainController {
         patronusColumn.setCellValueFactory(row -> new ReadOnlyStringWrapper(mostrarValor(row.getValue().getPatronus())));
 
         // Solo traducimos la interfaz. Los datos de las bases se muestran sin traducir.
-        // Columnas adaptables: el ancho se distribuye sin salirse de la tabla.
+        // Las columnas comparten el espacio disponible sin salirse de la tabla.
         studentsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         nameColumn.setMinWidth(85);
         houseColumn.setMinWidth(65);
@@ -169,11 +188,13 @@ public class MainController {
         nationalityColumn.setPrefWidth(165);
         patronusColumn.setPrefWidth(140);
 
-        // Recolocar los paneles al redimensionar o maximizar la ventana.
+        // Recoloca los paneles al redimensionar o maximizar la ventana.
         rootPane.widthProperty().addListener((obs, anterior, nuevo) ->
                 adaptarVista(nuevo.doubleValue()));
+        // Espera a que JavaFX calcule el tamaño inicial antes de elegir el diseño.
         Platform.runLater(() -> adaptarVista(rootPane.getWidth()));
 
+        // Selecciona el idioma persistido y prepara las opciones disponibles.
         languageCombo.setItems(FXCollections.observableArrayList(
                 "Euskara", "Castellano", "English"));
         int indiceIdioma = switch (I18n.language()) {
@@ -188,22 +209,25 @@ public class MainController {
                 "Slytherin", "Hogwarths"));
         houseCombo.getSelectionModel().selectFirst();
 
-        // Redondea las esquinas de las imágenes para que encajen en el avatar.
+        // Recorta las imágenes para que sus esquinas coincidan con el avatar redondeado.
         Rectangle recorte = new Rectangle(98, 98);
         recorte.setArcWidth(28);
         recorte.setArcHeight(28);
         detailImage.setClip(recorte);
 
+        // Combina filtro y ordenación: la tabla sigue controlando el criterio de orden.
         SortedList<Student> ordenados = new SortedList<>(filtrados);
         ordenados.comparatorProperty().bind(studentsTable.comparatorProperty());
         studentsTable.setItems(ordenados);
 
+        // Agrupa las pulsaciones rápidas en una sola consulta tras 450 ms de pausa.
         esperaBusqueda.setOnFinished(event -> cargarAlumnos());
         searchField.textProperty().addListener((obs, anterior, actual) -> {
             versionConsulta++; // Invalida peticiones anteriores mientras se escribe
             statusLabel.setText(I18n.tr("status.preparing"));
             esperaBusqueda.playFromStart();
         });
+        // Mantiene el contador y la selección sincronizados con los filtros y la tabla.
         houseCombo.valueProperty().addListener((obs, anterior, actual) -> aplicarFiltroCasa());
         filtrados.addListener((ListChangeListener<Student>) cambio -> actualizarContador());
         studentsTable.getSelectionModel().selectedItemProperty().addListener(
@@ -249,6 +273,7 @@ public class MainController {
                 evento.consume();
             }
         });
+        // Sin una fila seleccionada, las acciones de edición y borrado empiezan desactivadas.
         actualizarBotonEliminar(null);
         actualizarBotonEditar(null);
 
@@ -257,7 +282,10 @@ public class MainController {
         cargarAlumnos(); // Carga inicialmente registros locales y caché, no demos
     }
 
-    /** Adapta el contenido al espacio horizontal disponible. */
+    /**
+     * Decide entre disposición horizontal y compacta, y actualiza cabecera, pie y columnas.
+     * @param ancho ancho disponible para la raíz, en píxeles lógicos
+     */
     private void adaptarVista(double ancho) {
         if (ancho <= 0) return;
 
@@ -307,7 +335,10 @@ public class MainController {
         }
     }
 
-    /** Tamaños visuales relativos: 1em equivale a la fuente base. */
+    /**
+     * Recalcula espacios y rellenos en función del tamaño de fuente base.
+     * @param emPx tamaño de fuente en píxeles lógicos, usado como unidad para las medidas
+     */
     public void aplicarFuenteBase(double emPx) {
         fuenteBase = emPx;
         double unidad = fuenteBase;
@@ -330,7 +361,10 @@ public class MainController {
         compactFooter.setVgap(unidad * 0.45);
     }
 
-    /** La cabecera se apila al faltar ancho; los botones quedan visibles. */
+    /**
+     * Apila el título y los controles de cabecera cuando el ancho es menor de 760 píxeles.
+     * @param ancho ancho disponible para la ventana
+     */
     private void adaptarCabecera(double ancho) {
         boolean compacta = ancho < 760;
         if (compacta == cabeceraCompacta) return;
@@ -355,7 +389,10 @@ public class MainController {
         }
     }
 
-    /** Los botones se distribuyen en varias filas cuando no caben. */
+    /**
+     * Cambia el pie entre una fila y un FlowPane para que los botones quepan en ventanas estrechas.
+     * @param ancho ancho disponible para la ventana
+     */
     private void adaptarPie(double ancho) {
         boolean compacto = ancho < 790;
         if (compacto == pieCompacto) return;
@@ -375,7 +412,10 @@ public class MainController {
         }
     }
 
-    /** En pantallas muy estrechas deja los datos completos en la ficha. */
+    /**
+     * Oculta las columnas menos prioritarias en pantallas estrechas; la ficha conserva esos datos.
+     * @param ancho ancho disponible para la ventana
+     */
     private void adaptarColumnas(double ancho) {
         boolean estrecha = ancho < 760;
         speciesColumn.setVisible(!estrecha);
@@ -386,12 +426,19 @@ public class MainController {
         // La ficha sigue mostrando todos los campos sin alterar los datos.
     }
 
-    /** Muestra el dato original sin traducirlo. */
+    /**
+     * Sustituye valores ausentes por un guion para mantener consistente la presentación.
+     * @param valor valor original recibido desde el modelo
+     * @return valor original o el marcador visual cuando está vacío
+     */
     private static String mostrarValor(String valor) {
         return valor == null || valor.isBlank() ? "—" : valor;
     }
 
-    /** Atajos en la ventana principal (Ctrl en Windows/Linux, Command en macOS). */
+    /**
+     * Registra atajos estándar de la plataforma en la escena activa.
+     * @param escena escena cuyos aceleradores se actualizarán
+     */
     private void configurarAtajos(Scene escena) {
         // Se limpian los aceleradores propios de la vista anterior al cambiar de idioma.
         escena.getAccelerators().clear();
@@ -453,6 +500,7 @@ public class MainController {
         acerca.showAndWait();
     }
 
+    /** Asigna al diálogo el mismo icono de ventana que usa la aplicación principal. */
     private static void instalarIcono(Dialog<?> dialogo) {
         dialogo.setOnShown(evento -> {
             Window ventana = dialogo.getDialogPane().getScene().getWindow();
@@ -512,6 +560,10 @@ public class MainController {
         );
     }
 
+    /**
+     * Filtra la lista observable por casa, conserva una selección válida y actualiza el contador.
+     * Los nombres históricos del grupo propio se aceptan como equivalentes para compatibilidad.
+     */
     private void aplicarFiltroCasa() {
         String casa = houseCombo.getValue();
         filtrados.setPredicate(alumno -> {
@@ -540,10 +592,15 @@ public class MainController {
         }
     }
 
+    /** Actualiza el número mostrado con la cantidad de filas que pasan el filtro actual. */
     private void actualizarContador() {
         countLabel.setText(I18n.tr("students.count", filtrados.size()));
     }
 
+    /**
+     * Actualiza la ficha de detalle y solicita la foto del alumno seleccionado, si existe.
+     * Si no hay selección, limpia la ficha y muestra el estado vacío.
+     */
     private void mostrarAlumno(Student alumno) {
         // Por defecto mostramos las iniciales; la foto se carga en segundo plano.
         detailImage.setImage(null);
@@ -589,6 +646,7 @@ public class MainController {
      * en formato original para evitar WebP (no compatible con JavaFX 21).
      * Si falla, deja visibles las iniciales y muestra la causa en consola.
      */
+    /** Comprueba la URL y la caché antes de iniciar la descarga asíncrona de la fotografía. */
     private void mostrarFoto(Student alumno) {
         String url = alumno.getImagen();
         System.out.println("[FOTO] " + alumno.getNombre() + " -> " + url);
@@ -611,7 +669,10 @@ public class MainController {
         descargarImagen(alumno, url, urlsAlternativas(url), 0);
     }
 
-    /** Variantes en formato original, con retroceso a la URL de origen. */
+    /**
+     * Prepara variantes de URL que fuerzan un formato de imagen compatible con JavaFX.
+     * La URL recibida queda al final como último intento.
+     */
     private static List<String> urlsAlternativas(String url) {
         List<String> urls = new ArrayList<>();
         if (url.contains("static.wikia.nocookie.net/")) {
@@ -631,6 +692,15 @@ public class MainController {
     /**
      * Prueba las URL sin bloquear JavaFX y convierte los bytes a Image
      * solamente en el hilo de la interfaz.
+     */
+    /**
+     * Descarga una variante de imagen sin bloquear la interfaz y prueba la siguiente si falla.
+     * La creación y asignación del objeto Image se realiza en el hilo de JavaFX.
+     *
+     * @param alumno alumno al que corresponde la imagen
+     * @param urlOriginal URL usada como clave de caché
+     * @param urls variantes de URL que se intentarán
+     * @param intento índice de la variante que se está solicitando
      */
     private void descargarImagen(
             Student alumno, String urlOriginal, List<String> urls, int intento) {
@@ -694,7 +764,10 @@ public class MainController {
         });
     }
 
-    /** Nunca coloca la foto de un alumno sobre la ficha de otro. */
+    /**
+     * Presenta la foto solo si el alumno sigue seleccionado cuando termina la descarga.
+     * Así se evita que una respuesta tardía sobrescriba la ficha de otra persona.
+     */
     private void aplicarFoto(Student alumno, Image foto) {
         if (studentsTable.getSelectionModel().getSelectedItem() != alumno) {
             return;
@@ -706,6 +779,10 @@ public class MainController {
     }
 
     /** Vuelve a cargar la vista con el idioma seleccionado; no cambia datos en la API. */
+    /**
+     * Persiste el idioma elegido y vuelve a cargar la vista con sus textos traducidos.
+     * Los datos de estudiantes permanecen en la API y no se modifican por este cambio.
+     */
     @FXML
     private void handleChangeLanguage() {
         if (languageCombo == null || languageCombo.getSelectionModel().isEmpty()) return;
@@ -730,11 +807,16 @@ public class MainController {
         }
     }
 
+    /** Repite la consulta vigente, respetando el texto actual del buscador. */
     @FXML
     private void handleRefresh() {
         cargarAlumnos(); // Repite la búsqueda actual, no recupera datos ficticios
     }
 
+    /**
+     * Abre el formulario de alta y envía los datos confirmados a la API.
+     * La petición se ejecuta en segundo plano y comunica el resultado en la interfaz.
+     */
     @FXML
     private void handleAdd() {
         Optional<NuevoAlumno> datos = AlumnoFormDialog.mostrar(
@@ -774,6 +856,10 @@ public class MainController {
         );
     }
 
+    /**
+     * Valida la selección, abre el formulario de edición y actualiza el registro por su ID.
+     * Las operaciones de edición solo están disponibles para alumnos de la casa propia.
+     */
     @FXML
     private void handleEdit() {
         Student seleccionado = studentsTable.getSelectionModel().getSelectedItem();
@@ -824,6 +910,10 @@ public class MainController {
     }
 
     /** La interfaz solo ofrece el borrado de alumnos de la nueva casa. */
+    /**
+     * Comprueba los criterios de edición y borrado de los registros creados en esta aplicación.
+     * Exige casa editable e identificador interno no vacío.
+     */
     private static boolean esAlumnoNuevo(Student alumno) {
         return alumno != null
                 && "Hogwarths".equalsIgnoreCase(alumno.getCasa())
@@ -832,14 +922,20 @@ public class MainController {
                 && !"—".equals(alumno.getId());
     }
 
+    /** Habilita la edición solo si hay un alumno editable y no hay operaciones incompatibles. */
     private void actualizarBotonEditar(Student alumno) {
         editButton.setDisable(editandoAlumno || borrandoAlumno || !esAlumnoNuevo(alumno));
     }
 
+    /** Habilita el borrado solo si hay un alumno editable y no hay operaciones en curso. */
     private void actualizarBotonEliminar(Student alumno) {
         deleteButton.setDisable(borrandoAlumno || editandoAlumno || !esAlumnoNuevo(alumno));
     }
 
+    /**
+     * Solicita confirmación antes de borrar y, tras el éxito, actualiza la tabla y la selección.
+     * Las filas de las bases históricas permanecen en modo de solo lectura.
+     */
     @FXML
     private void handleDelete() {
         Student alumno = studentsTable.getSelectionModel().getSelectedItem();
@@ -897,6 +993,7 @@ public class MainController {
         );
     }
 
+    /** Informa de una función que todavía no está disponible en esta versión. */
     private void mostrarPendiente(String titulo) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle(I18n.tr("alert.version.title"));
@@ -905,6 +1002,7 @@ public class MainController {
         alerta.showAndWait();
     }
 
+    /** Muestra un aviso modal para comunicar errores de validación o acciones no permitidas. */
     private void mostrarAviso(String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle(I18n.tr("common.attention"));
@@ -913,6 +1011,11 @@ public class MainController {
         alerta.showAndWait();
     }
 
+    /**
+     * Extrae la causa más profunda de una excepción asíncrona para mostrar un mensaje útil.
+     * @param error excepción recibida desde la operación
+     * @return mensaje de la causa raíz o su nombre de clase si no tiene mensaje
+     */
     private static String mensajeError(Throwable error) {
         Throwable causa = error;
         while (causa.getCause() != null) {

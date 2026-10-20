@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- Importaciones necesarias para definir los componentes de la interfaz JavaFX. -->
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -16,26 +17,74 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<!--
+    Contenedor principal de la aplicación.
+    BorderPane distribuye la interfaz en cinco zonas: superior, inferior,
+    izquierda, derecha y central. En este caso se utilizan la cabecera,
+    el contenido central y el pie de la ventana.
+
+    fx:controller conecta esta vista con MainController, que gestiona
+    los eventos y la interacción entre la interfaz y los datos.
+    Las dimensiones prefWidth y prefHeight establecen el tamaño preferido
+    de la ventana, mientras que app-root permite aplicar estilos CSS.
+-->
 <BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.ethazi.javafx.controller.MainController"
             prefWidth="1250" prefHeight="760" styleClass="app-root">
 
+    <!-- ========================================================= -->
+    <!-- CABECERA: título, descripción, ayuda, información e idioma -->
+    <!-- ========================================================= -->
     <top>
+        <!--
+            Organiza horizontalmente los elementos de la cabecera.
+            spacing establece la separación entre componentes,
+            alignment alinea su contenido y app-header aplica el CSS.
+        -->
         <HBox fx:id="headerRow" spacing="16" alignment="CENTER_LEFT" styleClass="app-header">
+
+            <!-- Márgenes interiores de la cabecera. -->
             <padding><Insets top="22" right="34" bottom="22" left="34"/></padding>
+
+            <!-- Agrupa el título y el subtítulo de la aplicación. -->
             <VBox fx:id="headerTitle" spacing="4">
+
+                <!-- Texto principal obtenido del archivo de traducciones. -->
                 <Label text="%app.heading" wrapText="true" styleClass="title"/>
+
+                <!-- Descripción secundaria de la aplicación. -->
                 <Label text="%app.subtitle" wrapText="true" styleClass="subtitle"/>
             </VBox>
+
+            <!--
+                Región flexible que ocupa el espacio horizontal disponible.
+                Permite separar el título de los controles situados a la derecha.
+            -->
             <Region fx:id="headerSpacer" HBox.hgrow="ALWAYS"/>
+
+            <!-- Agrupa los botones informativos y el selector de idioma. -->
             <VBox fx:id="headerControls" spacing="7" alignment="CENTER_RIGHT">
+
+                <!-- Botones de acceso a la ayuda y a la información de la aplicación. -->
                 <HBox spacing="7" alignment="CENTER_RIGHT">
+
+                    <!-- Ejecuta handleHelp en MainController al pulsarse. -->
                     <Button fx:id="helpButton" text="%button.help" onAction="#handleHelp"
                             styleClass="header-info-button"/>
+
+                    <!-- Ejecuta handleAbout en MainController al pulsarse. -->
                     <Button fx:id="aboutButton" text="%button.about" onAction="#handleAbout"
                             styleClass="header-info-button"/>
                 </HBox>
+
+                <!-- Selector del idioma de la interfaz. -->
                 <HBox spacing="8" alignment="CENTER_RIGHT">
+
+                    <!--
+                        Permite seleccionar el idioma disponible.
+                        accessibleText proporciona una descripción accesible
+                        y handleChangeLanguage procesa el cambio seleccionado.
+                    -->
                     <ComboBox fx:id="languageCombo" prefWidth="138" prefHeight="34"
                               accessibleText="%access.language" onAction="#handleChangeLanguage"
                               styleClass="language-selector"/>
@@ -44,82 +93,223 @@
         </HBox>
     </top>
 
+    <!-- ========================================================= -->
+    <!-- ZONA CENTRAL: búsqueda, filtros, tabla y ficha del alumno -->
+    <!-- ========================================================= -->
     <center>
+
+        <!--
+            Panel desplazable para adaptar el contenido a ventanas pequeñas.
+            fitToWidth y fitToHeight permiten ajustar el contenido al espacio
+            visible; hbarPolicy="NEVER" oculta el desplazamiento horizontal,
+            mientras que vbarPolicy="AS_NEEDED" muestra el vertical cuando hace falta.
+        -->
         <ScrollPane minWidth="0" minHeight="0" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER"
                     vbarPolicy="AS_NEEDED" styleClass="main-scroll">
           <content>
+
+        <!-- Contenedor vertical que agrupa la búsqueda y el área de resultados. -->
         <VBox fx:id="mainCenter" spacing="16" fillWidth="true">
+
+            <!-- Márgenes interiores del contenido central. -->
             <padding><Insets top="20" right="28" bottom="16" left="28"/></padding>
+
+            <!--
+                Tarjeta de búsqueda y filtrado.
+                Sus elementos se distribuyen horizontalmente y se alinean
+                por la parte inferior para mantener una presentación uniforme.
+            -->
             <HBox fx:id="searchRow" spacing="16" alignment="BOTTOM_LEFT" styleClass="search-card">
+
+                <!-- Campo de búsqueda textual de alumnos. -->
                 <VBox fx:id="searchBox" spacing="7" HBox.hgrow="ALWAYS">
+
+                    <!-- Etiqueta del campo de búsqueda, traducible. -->
                     <Label text="%search.label" styleClass="field-label"/>
+
+                    <!--
+                        Permite introducir texto para localizar alumnos.
+                        promptText muestra una indicación cuando está vacío.
+                        accessibleText mejora la identificación del campo
+                        mediante tecnologías de asistencia.
+                    -->
                     <TextField fx:id="searchField" promptText="%search.prompt"
                                accessibleText="%access.search"
                                prefHeight="43" maxWidth="Infinity" styleClass="search-input"/>
                 </VBox>
+
+                <!-- Selector utilizado para filtrar alumnos por casa. -->
                 <VBox fx:id="filterBox" spacing="7">
+
+                    <!-- Etiqueta del filtro. -->
                     <Label text="%filter.label" styleClass="field-label"/>
+
+                    <!--
+                        ComboBox para seleccionar la casa por la que se filtra.
+                        Sus opciones y el comportamiento del filtrado se gestionan
+                        desde el controlador Java.
+                    -->
                     <ComboBox fx:id="houseCombo" accessibleText="%access.house"
                               prefWidth="230" prefHeight="43" maxWidth="Infinity"
                               styleClass="database-selector"/>
                 </VBox>
             </HBox>
 
+            <!--
+                Fila principal de resultados.
+                Contiene la tabla de alumnos y una ficha con los datos
+                del alumno seleccionado.
+            -->
             <HBox fx:id="contentRow" spacing="16" VBox.vgrow="ALWAYS">
+
+                <!-- ================================================= -->
+                <!-- TARJETA DE LA TABLA DE ALUMNOS                    -->
+                <!-- ================================================= -->
+
+                <!--
+                    Contenedor de la tabla.
+                    HBox.hgrow permite que se expanda horizontalmente
+                    y maxWidth="Infinity" evita limitar su anchura máxima.
+                -->
                 <VBox fx:id="tableCard" spacing="12" styleClass="content-card"
                       HBox.hgrow="ALWAYS" maxWidth="Infinity">
+
+                    <!-- Cabecera de la tabla con título y contador de registros. -->
                     <HBox alignment="CENTER_LEFT">
+
+                        <!-- Título de la sección de alumnos. -->
                         <Label text="%students.heading" styleClass="section-heading"/>
+
+                        <!-- Región flexible que separa el título del contador. -->
                         <Region HBox.hgrow="ALWAYS"/>
+
+                        <!--
+                            Muestra el número de alumnos que corresponda.
+                            El controlador actualiza su contenido según los datos
+                            mostrados en la tabla.
+                        -->
                         <Label fx:id="countLabel" text="0" styleClass="count-label"/>
                     </HBox>
+
+                    <!--
+                        Tabla que presenta los registros de alumnos.
+                        studentsTable permite acceder a ella desde MainController.
+                        VBox.vgrow="ALWAYS" hace que aproveche el espacio vertical
+                        disponible dentro de su contenedor.
+                    -->
                     <TableView fx:id="studentsTable" VBox.vgrow="ALWAYS"
                                accessibleText="%access.studentsTable" styleClass="students-table">
+
+                        <!-- Definición de las columnas de información. -->
                         <columns>
+
+                            <!-- Nombre del alumno. -->
                             <TableColumn fx:id="nameColumn" text="%field.name" prefWidth="180"/>
+
+                            <!-- Casa a la que pertenece. -->
                             <TableColumn fx:id="houseColumn" text="%field.house" prefWidth="98"/>
+
+                            <!-- Especie del personaje. -->
                             <TableColumn fx:id="speciesColumn" text="%field.species" prefWidth="105"/>
+
+                            <!-- Género del alumno. -->
                             <TableColumn fx:id="genderColumn" text="%field.gender" prefWidth="80"/>
+
+                            <!-- Fecha de nacimiento. -->
                             <TableColumn fx:id="birthColumn" text="%field.birth" prefWidth="108"/>
+
+                            <!-- Nacionalidad. -->
                             <TableColumn fx:id="nationalityColumn" text="%field.nationality" prefWidth="132"/>
+
+                            <!-- Patronus asociado al alumno. -->
                             <TableColumn fx:id="patronusColumn" text="%field.patronus" prefWidth="125"/>
                         </columns>
+
+                        <!-- Mensaje mostrado cuando la tabla no contiene registros. -->
                         <placeholder><Label text="%students.empty"/></placeholder>
                     </TableView>
                 </VBox>
 
+                <!-- ================================================= -->
+                <!-- TARJETA CON LOS DETALLES DEL ALUMNO SELECCIONADO  -->
+                <!-- ================================================= -->
+
+                <!--
+                    Panel lateral con la información detallada del alumno.
+                    minWidth, prefWidth y maxWidth establecen los límites
+                    y la anchura preferida de la ficha.
+                -->
                 <VBox fx:id="detailCard" spacing="16" minWidth="290" prefWidth="310"
                       maxWidth="340" styleClass="content-card">
+
+                    <!-- Título de la ficha de información. -->
                     <Label text="%detail.heading" styleClass="section-heading"/>
+
+                    <!--
+                        Contenedor de la imagen del alumno.
+                        StackPane permite superponer la imagen y las iniciales
+                        para mostrar una alternativa cuando no hay imagen visible.
+                    -->
                     <StackPane styleClass="avatar" minHeight="98" prefHeight="98" maxHeight="98" prefWidth="98" maxWidth="98">
+
+                        <!--
+                            Imagen del alumno seleccionado.
+                            fitWidth y fitHeight limitan sus dimensiones;
+                            preserveRatio mantiene la proporción original.
+                            smooth activa el suavizado de la imagen y visible="false"
+                            hace que inicialmente permanezca oculta.
+                        -->
                         <ImageView fx:id="detailImage" fitWidth="98" fitHeight="98" preserveRatio="true" smooth="true" visible="false"/>
+
+                        <!--
+                            Texto alternativo visual para representar las iniciales
+                            cuando no se muestra la imagen.
+                        -->
                         <Label fx:id="detailInitials" text="—" styleClass="avatar-initials"/>
                     </StackPane>
+
+                    <!-- Nombre del alumno o mensaje inicial si no hay selección. -->
                     <VBox spacing="5">
                         <Label fx:id="detailName" text="%detail.noSelection" wrapText="true" styleClass="student-name"/>
                     </VBox>
+
+                    <!-- Separador visual entre la identidad y los datos del alumno. -->
                     <Region prefHeight="1" styleClass="thin-divider"/>
+
+                    <!-- Grupo vertical con los distintos campos de la ficha. -->
                     <VBox spacing="15">
+
+                        <!-- Casa del alumno. -->
                         <VBox spacing="4">
                             <Label text="%field.house" styleClass="detail-caption"/>
                             <Label fx:id="detailHouse" text="—" wrapText="true" styleClass="detail-value"/>
                         </VBox>
+
+                        <!-- Especie del personaje. -->
                         <VBox spacing="4">
                             <Label text="%field.species" styleClass="detail-caption"/>
                             <Label fx:id="detailSpecies" text="—" wrapText="true" styleClass="detail-value"/>
                         </VBox>
+
+                        <!-- Género del alumno. -->
                         <VBox spacing="4">
                             <Label text="%field.gender" styleClass="detail-caption"/>
                             <Label fx:id="detailGender" text="—" wrapText="true" styleClass="detail-value"/>
                         </VBox>
+
+                        <!-- Fecha de nacimiento. -->
                         <VBox spacing="4">
                             <Label text="%field.birth" styleClass="detail-caption"/>
                             <Label fx:id="detailBirth" text="—" wrapText="true" styleClass="detail-value"/>
                         </VBox>
+
+                        <!-- Nacionalidad. -->
                         <VBox spacing="4">
                             <Label text="%field.nationality" styleClass="detail-caption"/>
                             <Label fx:id="detailNationality" text="—" wrapText="true" styleClass="detail-value"/>
                         </VBox>
+
+                        <!-- Patronus. -->
                         <VBox spacing="4">
                             <Label text="%field.patronus" styleClass="detail-caption"/>
                             <Label fx:id="detailPatronus" text="—" wrapText="true" styleClass="detail-value"/>
@@ -132,19 +322,55 @@
         </ScrollPane>
     </center>
 
+    <!-- ========================================================= -->
+    <!-- PIE DE VENTANA: acciones, estado y versión de la aplicación -->
+    <!-- ========================================================= -->
     <bottom>
+
+        <!--
+            Contenedor vertical del pie de la aplicación.
+            Agrupa los botones de gestión, el mensaje de estado
+            y la información de versión.
+        -->
         <VBox fx:id="footerBox" spacing="12" styleClass="footer">
+
+            <!-- Márgenes interiores del pie de ventana. -->
             <padding><Insets top="14" right="28" bottom="18" left="28"/></padding>
+
+            <!-- Fila de botones para gestionar los registros. -->
             <HBox fx:id="footerRow" spacing="12" alignment="CENTER_LEFT">
+
+                <!-- Abre el formulario para crear un alumno. -->
                 <Button fx:id="addButton" text="%button.add" onAction="#handleAdd" styleClass="primary-button"/>
+
+                <!-- Inicia la edición del alumno seleccionado. -->
                 <Button fx:id="editButton" text="%button.edit" onAction="#handleEdit" styleClass="secondary-button"/>
+
+                <!-- Inicia el proceso de eliminación del alumno seleccionado. -->
                 <Button fx:id="deleteButton" text="%button.delete" onAction="#handleDelete" styleClass="secondary-button"/>
+
+                <!--
+                    Espacio flexible que separa las acciones de gestión
+                    del botón de actualización.
+                -->
                 <Region fx:id="footerSpacer" HBox.hgrow="ALWAYS"/>
+
+                <!-- Solicita la actualización de los datos mostrados. -->
                 <Button fx:id="refreshButton" text="%button.refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
             </HBox>
+
+            <!-- Área destinada a mostrar mensajes sobre el estado de la aplicación. -->
             <HBox alignment="CENTER_LEFT" spacing="8">
+
+                <!--
+                    Muestra información como el estado inicial,
+                    el resultado de una operación o posibles incidencias.
+                    wrapText permite distribuir mensajes largos en varias líneas.
+                -->
                 <Label fx:id="statusLabel" text="%status.waiting" wrapText="true" styleClass="status-label"/>
             </HBox>
+
+            <!-- Etiqueta para mostrar información complementaria, como versión y autores. -->
             <Label fx:id="appInfoLabel" wrapText="true" styleClass="footer-version-label"/>
         </VBox>
     </bottom>
