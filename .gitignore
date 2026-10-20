@@ -71,3 +71,24 @@ backend/database/
 data/databases/derby/
 data/databases/h2/
 data/databases/hsqldb/
+
+
+# ==================
+# UNITY
+# =================
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+unity/UNITYEXE/ETHAZI_R01_Unity_Data/sharedassets0.assets.resS
+unity/UNITYEXE/ETHAZI_R01_Unity_Data/sharedassets0.assets.resS
+
+# Archivos de Visual Studio
+.vs/
+*.csproj
+*.sln
+*.suo
+*.user
