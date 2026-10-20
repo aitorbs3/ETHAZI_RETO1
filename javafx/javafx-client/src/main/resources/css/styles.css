@@ -1,26 +1,74 @@
-/* Paleta plateada y azul noche aprobada para la maqueta. */
+/* Paleta visual principal de la aplicación:
+   combina tonos plateados, grises claros y azul noche. */
+
+/* Estilos generales de todos los elementos de la interfaz. */
 .root {
+    /* Define la familia tipográfica principal y sus alternativas. */
     -fx-font-family: "Segoe UI", "Arial", sans-serif;
+
+    /* Establece el tamaño de fuente base de la aplicación. */
     -fx-font-size: 15px;
+
+    /* Define el color de texto predeterminado. */
     -fx-text-fill: #213047;
 }
-.app-root { -fx-background-color: #e9edf2; }
+
+/* Fondo general de la aplicación. */
+.app-root {
+    -fx-background-color: #e9edf2;
+}
+
+/* Cabecera principal de la interfaz. */
 .app-header {
+    /* Aplica un degradado horizontal desde un gris casi blanco
+       hasta un tono plateado azulado. */
     -fx-background-color: linear-gradient(to right, #f8f9fb 0%, #e2e9f1 70%, #cbd6e2 100%);
+
+    /* Añade un borde inferior para separar la cabecera del contenido. */
     -fx-border-color: transparent transparent #cbd4dd transparent;
+
+    /* Solo el borde inferior tiene un grosor de un píxel. */
     -fx-border-width: 0 0 1 0;
 }
-.title { -fx-text-fill: #14243c; -fx-font-family: "Georgia"; -fx-font-size: 2.2em; }
-.subtitle { -fx-text-fill: #495e78; -fx-font-size: 0.8em; -fx-font-weight: bold; }
+
+/* Título principal de la aplicación. */
+.title {
+    -fx-text-fill: #14243c;
+    -fx-font-family: "Georgia";
+    -fx-font-size: 2.2em;
+}
+
+/* Texto secundario situado junto al título. */
+.subtitle {
+    -fx-text-fill: #495e78;
+    -fx-font-size: 0.8em;
+    -fx-font-weight: bold;
+}
+
+/* Tarjetas que contienen el buscador y el contenido principal. */
 .search-card, .content-card {
     -fx-background-color: #f8fafc;
     -fx-border-color: #d3dce5;
+
+    /* Redondea las esquinas del borde y del fondo. */
     -fx-border-radius: 0.8em;
     -fx-background-radius: 0.8em;
+
+    /* Añade espacio interior entre el borde y el contenido. */
     -fx-padding: 1.133em;
+
+    /* Aplica una sombra suave para dar profundidad visual a las tarjetas. */
     -fx-effect: dropshadow(gaussian, rgba(47, 61, 80, 0.07), 10, 0, 0, 2);
 }
-.field-label { -fx-text-fill: #41536b; -fx-font-size: 0.933em; -fx-font-weight: bold; }
+
+/* Etiquetas utilizadas para identificar los campos del formulario. */
+.field-label {
+    -fx-text-fill: #41536b;
+    -fx-font-size: 0.933em;
+    -fx-font-weight: bold;
+}
+
+/* Estilos compartidos por el campo de búsqueda y el selector de base de datos. */
 .search-input, .database-selector {
     -fx-background-color: #ffffff;
     -fx-background-radius: 0.533em;
@@ -29,64 +77,225 @@
     -fx-border-width: 1;
     -fx-text-fill: #1d3047;
 }
-.search-input:focused, .database-selector:focused { -fx-border-color: #6e879f; }
-.section-heading { -fx-font-family: "Georgia"; -fx-text-fill: #1d3047; -fx-font-size: 1.533em; }
-.count-label { -fx-text-fill: #64768b; }
+
+/* Cambia el color del borde cuando el campo recibe el foco. */
+.search-input:focused, .database-selector:focused {
+    -fx-border-color: #6e879f;
+}
+
+/* Títulos utilizados para separar las distintas secciones de la interfaz. */
+.section-heading {
+    -fx-font-family: "Georgia";
+    -fx-text-fill: #1d3047;
+    -fx-font-size: 1.533em;
+}
+
+/* Etiqueta que muestra el número de alumnos o resultados. */
+.count-label {
+    -fx-text-fill: #64768b;
+}
+
+/* Tabla utilizada para mostrar los alumnos. */
 .students-table {
     -fx-background-color: white;
     -fx-background-radius: 0.4em;
     -fx-border-color: #d8e0e8;
     -fx-border-radius: 0.4em;
+
+    /* Establece una altura fija para las filas de la tabla. */
     -fx-fixed-cell-size: 3.267em;
 }
-.students-table .column-header-background { -fx-background-color: #dde4ec; }
+
+/* Fondo de la zona superior que contiene los encabezados de las columnas. */
+.students-table .column-header-background {
+    -fx-background-color: #dde4ec;
+}
+
+/* Estilos de los encabezados de columna y del espacio sobrante
+   situado a su derecha dentro de la tabla. */
 .students-table .column-header, .students-table .filler {
     -fx-background-color: #dde4ec;
     -fx-border-color: transparent #cbd5e0 transparent transparent;
 }
-.students-table .column-header .label { -fx-text-fill: #243850; -fx-font-weight: bold; }
-.students-table .table-row-cell:odd { -fx-background-color: #f3f6f9; }
-.students-table .table-row-cell:even { -fx-background-color: white; }
-.students-table .table-row-cell:selected { -fx-background-color: #c7d7e7; }
-.students-table .table-row-cell:selected .text { -fx-fill: #132740; }
-.students-table .table-cell { -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0.333em; -fx-font-size: 1em; }
+
+/* Apariencia del texto de los encabezados de la tabla. */
+.students-table .column-header .label {
+    -fx-text-fill: #243850;
+    -fx-font-weight: bold;
+}
+
+/* Alterna los colores de fondo de las filas impares. */
+.students-table .table-row-cell:odd {
+    -fx-background-color: #f3f6f9;
+}
+
+/* Establece un fondo blanco para las filas pares. */
+.students-table .table-row-cell:even {
+    -fx-background-color: white;
+}
+
+/* Resalta la fila seleccionada por el usuario. */
+.students-table .table-row-cell:selected {
+    -fx-background-color: #c7d7e7;
+}
+
+/* Define el color del texto de la fila seleccionada para mantener
+   un contraste adecuado con el fondo. */
+.students-table .table-row-cell:selected .text {
+    -fx-fill: #132740;
+}
+
+/* Configura las celdas de la tabla. */
+.students-table .table-cell {
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0.333em;
+    -fx-font-size: 1em;
+}
+
+/* Contenedor visual del avatar del alumno. */
 .avatar {
     -fx-background-color: linear-gradient(to bottom right, #dfe6ed, #aebdcd);
     -fx-background-radius: 0.933em;
     -fx-border-color: #c0cbd6;
     -fx-border-radius: 0.933em;
 }
-.avatar-initials { -fx-font-size: 1.933em; -fx-font-weight: bold; -fx-text-fill: #20364f; }
-.student-name { -fx-font-family: "Georgia"; -fx-font-size: 1.533em; -fx-text-fill: #192d46; }
-.student-id { -fx-text-fill: #65778e; }
-.thin-divider { -fx-background-color: #d6dfe7; }
-.detail-caption { -fx-font-size: 0.867em; -fx-text-fill: #6c7c8c; }
-.detail-value { -fx-font-size: 1.133em; -fx-text-fill: #172b43; }
-.footer { -fx-background-color: #edf1f5; -fx-border-color: #cfd8e1 transparent transparent transparent; }
-.button { -fx-cursor: hand; -fx-font-size: 0.933em; -fx-padding: 0.667em 1.2em; -fx-background-radius: 0.533em; -fx-border-radius: 0.533em; }
-.primary-button { -fx-background-color: #304963; -fx-text-fill: #ffffff; }
-.primary-button:hover { -fx-background-color: #213b57; }
-.secondary-button { -fx-background-color: #f9fafc; -fx-text-fill: #233750; -fx-border-color: #c4d0db; }
-.secondary-button:hover { -fx-background-color: #dde6ef; }
-.status-label { -fx-text-fill: #708095; -fx-font-size: 0.733em; }
 
-/* Formulario de alta integrado con la paleta plateada. */
-.student-form-dialog { -fx-background-color: #f5f8fb; }
-.student-form-dialog .header-panel { -fx-background-color: #e0e8f0; }
-.student-form-dialog .header-panel .label { -fx-text-fill: #1d3047; -fx-font-size: 1.067em; }
-.student-form-dialog .button { -fx-background-radius: 0.533em; }
-.form-error { -fx-text-fill: #ad3242; -fx-font-size: 0.8em; }
+/* Estilo de las iniciales que aparecen en el avatar. */
+.avatar-initials {
+    -fx-font-size: 1.933em;
+    -fx-font-weight: bold;
+    -fx-text-fill: #20364f;
+}
+
+/* Nombre del alumno en su ficha de detalles. */
+.student-name {
+    -fx-font-family: "Georgia";
+    -fx-font-size: 1.533em;
+    -fx-text-fill: #192d46;
+}
+
+/* Texto utilizado para mostrar el identificador del alumno. */
+.student-id {
+    -fx-text-fill: #65778e;
+}
+
+/* Separador visual fino entre bloques de información. */
+.thin-divider {
+    -fx-background-color: #d6dfe7;
+}
+
+/* Etiquetas que describen los datos de la ficha del alumno. */
+.detail-caption {
+    -fx-font-size: 0.867em;
+    -fx-text-fill: #6c7c8c;
+}
+
+/* Valores de los datos mostrados en la ficha del alumno. */
+.detail-value {
+    -fx-font-size: 1.133em;
+    -fx-text-fill: #172b43;
+}
+
+/* Fondo y borde superior del pie de la aplicación. */
+.footer {
+    -fx-background-color: #edf1f5;
+    -fx-border-color: #cfd8e1 transparent transparent transparent;
+}
+
+/* Estilo general de los botones de la aplicación. */
+.button {
+    -fx-cursor: hand;
+    -fx-font-size: 0.933em;
+    -fx-padding: 0.667em 1.2em;
+    -fx-background-radius: 0.533em;
+    -fx-border-radius: 0.533em;
+}
+
+/* Botón principal, destinado a las acciones más importantes. */
+.primary-button {
+    -fx-background-color: #304963;
+    -fx-text-fill: #ffffff;
+}
+
+/* Cambia el fondo del botón principal cuando el cursor pasa por encima. */
+.primary-button:hover {
+    -fx-background-color: #213b57;
+}
+
+/* Botón secundario para acciones complementarias. */
+.secondary-button {
+    -fx-background-color: #f9fafc;
+    -fx-text-fill: #233750;
+    -fx-border-color: #c4d0db;
+}
+
+/* Efecto visual del botón secundario al pasar el cursor. */
+.secondary-button:hover {
+    -fx-background-color: #dde6ef;
+}
+
+/* Texto informativo del estado de la aplicación. */
+.status-label {
+    -fx-text-fill: #708095;
+    -fx-font-size: 0.733em;
+}
+
+/* Formulario utilizado para registrar o modificar alumnos. */
+.student-form-dialog {
+    -fx-background-color: #f5f8fb;
+}
+
+/* Fondo de la cabecera del formulario emergente. */
+.student-form-dialog .header-panel {
+    -fx-background-color: #e0e8f0;
+}
+
+/* Texto del encabezado del formulario emergente. */
+.student-form-dialog .header-panel .label {
+    -fx-text-fill: #1d3047;
+    -fx-font-size: 1.067em;
+}
+
+/* Redondea las esquinas de los botones del formulario. */
+.student-form-dialog .button {
+    -fx-background-radius: 0.533em;
+}
+
+/* Mensajes de error que aparecen en el formulario. */
+.form-error {
+    -fx-text-fill: #ad3242;
+    -fx-font-size: 0.8em;
+}
 
 
-/* Cabecera con castillo, tamaño ya adaptado para evitar el recorte. */
+/* Cabecera con una imagen de fondo del castillo de Hogwarts. */
 .app-header {
+    /* Carga la imagen desde la carpeta de recursos del proyecto. */
     -fx-background-image: url("../images/castillo_hogwarts.png");
+
+    /* Evita que la imagen se repita dentro de la cabecera. */
     -fx-background-repeat: no-repeat;
+
+    /* Ajusta la imagen para cubrir toda la superficie de la cabecera. */
     -fx-background-size: cover;
+
+    /* Coloca la imagen hacia la derecha y la centra verticalmente. */
     -fx-background-position: right center;
+
+    /* Establece una altura mínima para evitar que la cabecera
+       quede demasiado reducida. */
     -fx-min-height: 8.333em;
 }
-.language-label { -fx-text-fill: #243850; -fx-font-weight: bold; -fx-font-size: 0.867em; }
+
+/* Etiqueta que identifica el selector de idioma. */
+.language-label {
+    -fx-text-fill: #243850;
+    -fx-font-weight: bold;
+    -fx-font-size: 0.867em;
+}
+
+/* Apariencia del selector de idioma. */
 .language-selector {
     -fx-background-color: #f8fafc;
     -fx-border-color: #b9c8d8;
@@ -94,38 +303,119 @@
     -fx-background-radius: 0.467em;
     -fx-text-fill: #14243c;
 }
-/* El valor de casa del formulario debe contrastar con el fondo plateado. */
-.student-form-dialog .house-value { -fx-text-fill: #203750; -fx-font-size: 0.867em; -fx-font-weight: bold; }
-/* Encabezado del DatePicker: mes y año legibles. */
-.date-picker-popup { -fx-background-color: #f8fafc; -fx-border-color: #b7c5d4; }
-.date-picker-popup > .month-year-pane { -fx-background-color: #dbe4ee; -fx-padding: 0.533em; }
+
+/* Asegura que el valor de la casa tenga contraste suficiente
+   con el fondo del formulario. */
+.student-form-dialog .house-value {
+    -fx-text-fill: #203750;
+    -fx-font-size: 0.867em;
+    -fx-font-weight: bold;
+}
+
+/* Fondo y borde del calendario desplegable del DatePicker. */
+.date-picker-popup {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #b7c5d4;
+}
+
+/* Fondo y espaciado de la zona superior del calendario,
+   donde se muestra el mes y el año. */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #dbe4ee;
+    -fx-padding: 0.533em;
+}
+
+/* Texto del mes, el año y los controles de navegación del calendario. */
 .date-picker-popup .month-year-pane .label,
-.date-picker-popup .spinner .label { -fx-text-fill: #203750; -fx-font-weight: bold; -fx-font-size: 0.867em; }
-.date-picker-popup .spinner .button { -fx-background-color: transparent; }
-.date-picker-popup .spinner .button:hover { -fx-background-color: #c4d3e2; }
+.date-picker-popup .spinner .label {
+    -fx-text-fill: #203750;
+    -fx-font-weight: bold;
+    -fx-font-size: 0.867em;
+}
+
+/* Elimina el fondo de los botones que permiten cambiar de mes. */
+.date-picker-popup .spinner .button {
+    -fx-background-color: transparent;
+}
+
+/* Añade un fondo al pasar el cursor por los botones del calendario. */
+.date-picker-popup .spinner .button:hover {
+    -fx-background-color: #c4d3e2;
+}
+
+/* Color de las flechas de navegación entre meses. */
 .date-picker-popup .spinner .button .left-arrow,
-.date-picker-popup .spinner .button .right-arrow { -fx-background-color: #203750; }
-.date-picker-popup .day-name-cell { -fx-text-fill: #203750; -fx-font-weight: bold; -fx-background-color: #e8eef5; }
-.date-picker-popup .day-cell { -fx-text-fill: #243b53; -fx-background-color: #ffffff; }
-.date-picker-popup .day-cell:hover { -fx-background-color: #d6e3ef; }
-.date-picker-popup .day-cell:selected { -fx-background-color: #385a78; -fx-text-fill: #ffffff; }
-.date-picker-popup .day-cell:disabled { -fx-background-color: #f0f2f5; -fx-opacity: 0.45; }
-.student-form-dialog .date-picker { -fx-background-color: #ffffff; -fx-border-color: #c1cedc; -fx-border-radius: 0.333em; }
-.student-form-dialog .date-picker .text-field { -fx-text-fill: #203750; -fx-background-color: #ffffff; }
-.student-form-dialog .form-error { -fx-text-fill: #b42318; -fx-font-size: 0.8em; }
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: #203750;
+}
+
+/* Estilo de los nombres de los días de la semana. */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #203750;
+    -fx-font-weight: bold;
+    -fx-background-color: #e8eef5;
+}
+
+/* Apariencia normal de las celdas que representan los días del mes. */
+.date-picker-popup .day-cell {
+    -fx-text-fill: #243b53;
+    -fx-background-color: #ffffff;
+}
+
+/* Resalta el día sobre el que se encuentra el cursor. */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #d6e3ef;
+}
+
+/* Destaca el día seleccionado en el calendario. */
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #385a78;
+    -fx-text-fill: #ffffff;
+}
+
+/* Atenúa los días que no se pueden seleccionar. */
+.date-picker-popup .day-cell:disabled {
+    -fx-background-color: #f0f2f5;
+    -fx-opacity: 0.45;
+}
+
+/* Estilo exterior del selector de fecha dentro del formulario. */
+.student-form-dialog .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #c1cedc;
+    -fx-border-radius: 0.333em;
+}
+
+/* Texto introducido o mostrado dentro del selector de fecha. */
+.student-form-dialog .date-picker .text-field {
+    -fx-text-fill: #203750;
+    -fx-background-color: #ffffff;
+}
+
+/* Estilo específico para los errores del formulario de alumnos. */
+.student-form-dialog .form-error {
+    -fx-text-fill: #b42318;
+    -fx-font-size: 0.8em;
+}
 
 /* ============================================
    ACCESIBILIDAD / INFORMACIÓN DEL CLIENTE
    ============================================ */
+
+/* Texto que muestra la versión de la aplicación en el pie. */
 .footer-version-label {
     -fx-font-size: 0.867em;
     -fx-text-fill: #364e67;
 }
+
+/* Ajusta el tamaño y el espaciado del botón de información del pie. */
 .footer-info-button {
     -fx-padding: 0.467em 0.8em;
     -fx-font-size: 0.8em;
 }
-/* Mostrar claramente el control enfocado durante navegación con Tab. */
+
+/* Resalta los controles que reciben el foco mediante el teclado.
+   Esto facilita la navegación utilizando la tecla Tab. */
 .button:focused,
 .search-input:focused,
 .database-selector:focused,
@@ -135,16 +425,23 @@
     -fx-border-width: 2px;
     -fx-border-radius: 0.533em;
 }
-/* Mantener el contraste de los textos informativos. */
+
+/* Mejora la legibilidad de los mensajes de estado.
+   Esta regla posterior prevalece sobre la definición anterior
+   de .status-label para las propiedades que se repiten. */
 .status-label {
     -fx-text-fill: #41536b;
     -fx-font-size: 0.8em;
 }
+
+/* Tipografía y color del texto en las ventanas de ayuda. */
 .help-dialog .text-area {
     -fx-font-family: "Segoe UI", "Arial", sans-serif;
     -fx-font-size: 0.867em;
     -fx-text-fill: #203750;
 }
+
+/* Fondo del área interior del componente de texto de ayuda. */
 .help-dialog .text-area .content {
     -fx-background-color: #f8fafc;
 }
@@ -152,7 +449,11 @@
 /* ============================================
    ACCESIBILIDAD Y RESOLUCIONES DIFERENTES
    ============================================ */
-/* Zona central desplazable cuando no cabe verticalmente. */
+
+/* Define el fondo del área de desplazamiento principal
+   y de su viewport, evitando diferencias de color.
+   El desplazamiento permite acceder al contenido cuando
+   no cabe en la altura disponible. */
 .main-scroll,
 .main-scroll > .viewport {
     -fx-background-color: #e9edf2;
@@ -160,7 +461,7 @@
     -fx-padding: 0;
 }
 
-/* Acceso visible a Ayuda y Acerca de en la cabecera. */
+/* Estilo de los botones de ayuda e información de la cabecera. */
 .header-info-button {
     -fx-font-size: 0.933em;
     -fx-padding: 0.4em 0.733em;
@@ -170,16 +471,25 @@
     -fx-border-radius: 0.467em;
     -fx-background-radius: 0.467em;
 }
+
+/* Cambia el fondo de los botones informativos al pasar el cursor. */
 .header-info-button:hover {
     -fx-background-color: #dbe6f1;
 }
+
+/* Hace visible el foco del teclado en los botones informativos. */
 .header-info-button:focused {
     -fx-border-color: #23659b;
     -fx-border-width: 2px;
 }
+
+/* Ajusta el tamaño del texto de los encabezados de la tabla. */
 .students-table .column-header .label {
     -fx-font-size: 1em;
 }
+
+/* Establece tamaños de fuente más compactos en el formulario
+   para mantener una presentación equilibrada. */
 .student-form-dialog,
 .student-form-dialog .text-field,
 .student-form-dialog .date-picker {
@@ -188,19 +498,56 @@
 
 /* ============================================
    DISEÑO ADAPTABLE EN UNIDADES RELATIVAS
-   Un 1em sigue la fuente base de la ventana.
-   Las dimensiones estructurales se gestionan en JavaFX,
-   no estirando el contenido como una imagen.
+   Las unidades em dependen del tamaño de fuente.
+   Las dimensiones estructurales se controlan desde JavaFX,
+   en lugar de deformar el contenido como si fuera una imagen.
    ============================================ */
-.app-header { -fx-background-position: right center; }
-.app-header-compact { -fx-background-position: right center; }
-.students-table .column-header .label { -fx-font-size: 0.96em; }
-.students-table .table-cell { -fx-font-size: 0.95em; }
-/* Los datos largos se truncan dentro de su celda; nunca salen de la tarjeta. */
-.students-table .table-cell { -fx-padding: 0 0.36em; }
-/* Controles legibles y proporcionales en todas las resoluciones. */
-.search-input, .database-selector, .language-selector { -fx-font-size: 1em; }
-.footer .button { -fx-padding: 0.52em 0.82em; }
+
+/* Mantiene la posición de la imagen de fondo de la cabecera. */
+.app-header {
+    -fx-background-position: right center;
+}
+
+/* Aplica la misma posición a la versión compacta de la cabecera. */
+.app-header-compact {
+    -fx-background-position: right center;
+}
+
+/* Reduce ligeramente el tamaño del texto de los encabezados
+   para aprovechar mejor el espacio disponible. */
+.students-table .column-header .label {
+    -fx-font-size: 0.96em;
+}
+
+/* Ajusta el tamaño del texto dentro de las celdas de la tabla. */
+.students-table .table-cell {
+    -fx-font-size: 0.95em;
+}
+
+/* Ajusta el espaciado horizontal de las celdas.
+   La intención es aprovechar mejor el ancho disponible
+   y evitar que los datos largos sobresalgan visualmente.
+   El truncamiento real depende también del comportamiento
+   de las celdas y de cómo se configure la tabla en JavaFX. */
+.students-table .table-cell {
+    -fx-padding: 0 0.36em;
+}
+
+/* Mantiene tamaños de fuente proporcionales en los controles
+   de búsqueda, base de datos e idioma. */
+.search-input, .database-selector, .language-selector {
+    -fx-font-size: 1em;
+}
+
+/* Ajusta el espacio interior de los botones del pie de página. */
+.footer .button {
+    -fx-padding: 0.52em 0.82em;
+}
+
+/* Unifica el tamaño de fuente de los campos, el selector de fecha
+   y los botones del formulario de alumnos. */
 .student-form-dialog .text-field,
 .student-form-dialog .date-picker,
-.student-form-dialog .button { -fx-font-size: 1em; }
+.student-form-dialog .button {
+    -fx-font-size: 1em;
+}
