@@ -1,0 +1,206 @@
+/* Paleta plateada y azul noche aprobada para la maqueta. */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #213047;
+}
+.app-root { -fx-background-color: #e9edf2; }
+.app-header {
+    -fx-background-color: linear-gradient(to right, #f8f9fb 0%, #e2e9f1 70%, #cbd6e2 100%);
+    -fx-border-color: transparent transparent #cbd4dd transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.title { -fx-text-fill: #14243c; -fx-font-family: "Georgia"; -fx-font-size: 2.2em; }
+.subtitle { -fx-text-fill: #495e78; -fx-font-size: 0.8em; -fx-font-weight: bold; }
+.search-card, .content-card {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #d3dce5;
+    -fx-border-radius: 0.8em;
+    -fx-background-radius: 0.8em;
+    -fx-padding: 1.133em;
+    -fx-effect: dropshadow(gaussian, rgba(47, 61, 80, 0.07), 10, 0, 0, 2);
+}
+.field-label { -fx-text-fill: #41536b; -fx-font-size: 0.933em; -fx-font-weight: bold; }
+.search-input, .database-selector {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0.533em;
+    -fx-border-color: #c8d3df;
+    -fx-border-radius: 0.533em;
+    -fx-border-width: 1;
+    -fx-text-fill: #1d3047;
+}
+.search-input:focused, .database-selector:focused { -fx-border-color: #6e879f; }
+.section-heading { -fx-font-family: "Georgia"; -fx-text-fill: #1d3047; -fx-font-size: 1.533em; }
+.count-label { -fx-text-fill: #64768b; }
+.students-table {
+    -fx-background-color: white;
+    -fx-background-radius: 0.4em;
+    -fx-border-color: #d8e0e8;
+    -fx-border-radius: 0.4em;
+    -fx-fixed-cell-size: 3.267em;
+}
+.students-table .column-header-background { -fx-background-color: #dde4ec; }
+.students-table .column-header, .students-table .filler {
+    -fx-background-color: #dde4ec;
+    -fx-border-color: transparent #cbd5e0 transparent transparent;
+}
+.students-table .column-header .label { -fx-text-fill: #243850; -fx-font-weight: bold; }
+.students-table .table-row-cell:odd { -fx-background-color: #f3f6f9; }
+.students-table .table-row-cell:even { -fx-background-color: white; }
+.students-table .table-row-cell:selected { -fx-background-color: #c7d7e7; }
+.students-table .table-row-cell:selected .text { -fx-fill: #132740; }
+.students-table .table-cell { -fx-border-color: transparent; -fx-alignment: CENTER_LEFT; -fx-padding: 0 0.333em; -fx-font-size: 1em; }
+.avatar {
+    -fx-background-color: linear-gradient(to bottom right, #dfe6ed, #aebdcd);
+    -fx-background-radius: 0.933em;
+    -fx-border-color: #c0cbd6;
+    -fx-border-radius: 0.933em;
+}
+.avatar-initials { -fx-font-size: 1.933em; -fx-font-weight: bold; -fx-text-fill: #20364f; }
+.student-name { -fx-font-family: "Georgia"; -fx-font-size: 1.533em; -fx-text-fill: #192d46; }
+.student-id { -fx-text-fill: #65778e; }
+.thin-divider { -fx-background-color: #d6dfe7; }
+.detail-caption { -fx-font-size: 0.867em; -fx-text-fill: #6c7c8c; }
+.detail-value { -fx-font-size: 1.133em; -fx-text-fill: #172b43; }
+.footer { -fx-background-color: #edf1f5; -fx-border-color: #cfd8e1 transparent transparent transparent; }
+.button { -fx-cursor: hand; -fx-font-size: 0.933em; -fx-padding: 0.667em 1.2em; -fx-background-radius: 0.533em; -fx-border-radius: 0.533em; }
+.primary-button { -fx-background-color: #304963; -fx-text-fill: #ffffff; }
+.primary-button:hover { -fx-background-color: #213b57; }
+.secondary-button { -fx-background-color: #f9fafc; -fx-text-fill: #233750; -fx-border-color: #c4d0db; }
+.secondary-button:hover { -fx-background-color: #dde6ef; }
+.status-label { -fx-text-fill: #708095; -fx-font-size: 0.733em; }
+
+/* Formulario de alta integrado con la paleta plateada. */
+.student-form-dialog { -fx-background-color: #f5f8fb; }
+.student-form-dialog .header-panel { -fx-background-color: #e0e8f0; }
+.student-form-dialog .header-panel .label { -fx-text-fill: #1d3047; -fx-font-size: 1.067em; }
+.student-form-dialog .button { -fx-background-radius: 0.533em; }
+.form-error { -fx-text-fill: #ad3242; -fx-font-size: 0.8em; }
+
+
+/* Cabecera con castillo, tamaño ya adaptado para evitar el recorte. */
+.app-header {
+    -fx-background-image: url("../images/castillo_hogwarts.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: right center;
+    -fx-min-height: 8.333em;
+}
+.language-label { -fx-text-fill: #243850; -fx-font-weight: bold; -fx-font-size: 0.867em; }
+.language-selector {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #b9c8d8;
+    -fx-border-radius: 0.467em;
+    -fx-background-radius: 0.467em;
+    -fx-text-fill: #14243c;
+}
+/* El valor de casa del formulario debe contrastar con el fondo plateado. */
+.student-form-dialog .house-value { -fx-text-fill: #203750; -fx-font-size: 0.867em; -fx-font-weight: bold; }
+/* Encabezado del DatePicker: mes y año legibles. */
+.date-picker-popup { -fx-background-color: #f8fafc; -fx-border-color: #b7c5d4; }
+.date-picker-popup > .month-year-pane { -fx-background-color: #dbe4ee; -fx-padding: 0.533em; }
+.date-picker-popup .month-year-pane .label,
+.date-picker-popup .spinner .label { -fx-text-fill: #203750; -fx-font-weight: bold; -fx-font-size: 0.867em; }
+.date-picker-popup .spinner .button { -fx-background-color: transparent; }
+.date-picker-popup .spinner .button:hover { -fx-background-color: #c4d3e2; }
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow { -fx-background-color: #203750; }
+.date-picker-popup .day-name-cell { -fx-text-fill: #203750; -fx-font-weight: bold; -fx-background-color: #e8eef5; }
+.date-picker-popup .day-cell { -fx-text-fill: #243b53; -fx-background-color: #ffffff; }
+.date-picker-popup .day-cell:hover { -fx-background-color: #d6e3ef; }
+.date-picker-popup .day-cell:selected { -fx-background-color: #385a78; -fx-text-fill: #ffffff; }
+.date-picker-popup .day-cell:disabled { -fx-background-color: #f0f2f5; -fx-opacity: 0.45; }
+.student-form-dialog .date-picker { -fx-background-color: #ffffff; -fx-border-color: #c1cedc; -fx-border-radius: 0.333em; }
+.student-form-dialog .date-picker .text-field { -fx-text-fill: #203750; -fx-background-color: #ffffff; }
+.student-form-dialog .form-error { -fx-text-fill: #b42318; -fx-font-size: 0.8em; }
+
+/* ============================================
+   ACCESIBILIDAD / INFORMACIÓN DEL CLIENTE
+   ============================================ */
+.footer-version-label {
+    -fx-font-size: 0.867em;
+    -fx-text-fill: #364e67;
+}
+.footer-info-button {
+    -fx-padding: 0.467em 0.8em;
+    -fx-font-size: 0.8em;
+}
+/* Mostrar claramente el control enfocado durante navegación con Tab. */
+.button:focused,
+.search-input:focused,
+.database-selector:focused,
+.language-selector:focused,
+.students-table:focused {
+    -fx-border-color: #23659b;
+    -fx-border-width: 2px;
+    -fx-border-radius: 0.533em;
+}
+/* Mantener el contraste de los textos informativos. */
+.status-label {
+    -fx-text-fill: #41536b;
+    -fx-font-size: 0.8em;
+}
+.help-dialog .text-area {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 0.867em;
+    -fx-text-fill: #203750;
+}
+.help-dialog .text-area .content {
+    -fx-background-color: #f8fafc;
+}
+
+/* ============================================
+   ACCESIBILIDAD Y RESOLUCIONES DIFERENTES
+   ============================================ */
+/* Zona central desplazable cuando no cabe verticalmente. */
+.main-scroll,
+.main-scroll > .viewport {
+    -fx-background-color: #e9edf2;
+    -fx-background: #e9edf2;
+    -fx-padding: 0;
+}
+
+/* Acceso visible a Ayuda y Acerca de en la cabecera. */
+.header-info-button {
+    -fx-font-size: 0.933em;
+    -fx-padding: 0.4em 0.733em;
+    -fx-background-color: rgba(248, 250, 252, 0.92);
+    -fx-text-fill: #203750;
+    -fx-border-color: #9fb0c1;
+    -fx-border-radius: 0.467em;
+    -fx-background-radius: 0.467em;
+}
+.header-info-button:hover {
+    -fx-background-color: #dbe6f1;
+}
+.header-info-button:focused {
+    -fx-border-color: #23659b;
+    -fx-border-width: 2px;
+}
+.students-table .column-header .label {
+    -fx-font-size: 1em;
+}
+.student-form-dialog,
+.student-form-dialog .text-field,
+.student-form-dialog .date-picker {
+    -fx-font-size: 0.933em;
+}
+
+/* ============================================
+   DISEÑO ADAPTABLE EN UNIDADES RELATIVAS
+   Un 1em sigue la fuente base de la ventana.
+   Las dimensiones estructurales se gestionan en JavaFX,
+   no estirando el contenido como una imagen.
+   ============================================ */
+.app-header { -fx-background-position: right center; }
+.app-header-compact { -fx-background-position: right center; }
+.students-table .column-header .label { -fx-font-size: 0.96em; }
+.students-table .table-cell { -fx-font-size: 0.95em; }
+/* Los datos largos se truncan dentro de su celda; nunca salen de la tarjeta. */
+.students-table .table-cell { -fx-padding: 0 0.36em; }
+/* Controles legibles y proporcionales en todas las resoluciones. */
+.search-input, .database-selector, .language-selector { -fx-font-size: 1em; }
+.footer .button { -fx-padding: 0.52em 0.82em; }
+.student-form-dialog .text-field,
+.student-form-dialog .date-picker,
+.student-form-dialog .button { -fx-font-size: 1em; }

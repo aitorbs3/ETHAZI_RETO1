@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Azul noche oscuro para botones principales -->
+    <color name="hogwarts_blue_btn">#0E2A47</color>
+    <color name="hogwarts_blue_btn_pressed">#081B30</color>
+
+    <!-- Texto oscuro y secundario -->
+    <color name="hogwarts_text_title">#0F1E36</color>
+    <color name="hogwarts_text_body">#2C3E50</color>
+    <color name="hogwarts_text_muted">#7F8C8D</color>
+
+    <!-- Fondos de tarjetas y chips -->
+    <color name="card_background">#FAFAFA</color>
+    <color name="input_background">#F0F3F6</color>
+    <color name="chip_cached_bg">#E8F5E9</color>
+    <color name="chip_cached_text">#2E7D32</color>
+    <color name="status_green_dot">#4CAF50</color>
+
+    <!-- Botón secundario -->
+    <color name="btn_secondary_bg">#E2E7EC</color>
+</resources>

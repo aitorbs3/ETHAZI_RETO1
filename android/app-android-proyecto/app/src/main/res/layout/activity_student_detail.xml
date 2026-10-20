@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StudentDetailActivity">
+
+    <!-- 1. Imagen de Fondo de Pantalla (Primera capa) -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/fondo_app"
+        android:contentDescription="@string/cd_background" />
+
+    <!-- 2. Contenido principal estructurado (Segunda capa) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- BARRA SUPERIOR FIJA CON EL DESTELLO Y LÍNEAS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="48dp"
+            android:paddingBottom="12dp">
+
+            <!-- Fila superior: Botón atrás y Título -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp">
+
+                <!-- Botón de retroceso (Flecha atrás) -->
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="@string/back"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_arrow_back" />
+
+                <!-- Título centrado -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="serif"
+                    android:gravity="center"
+                    android:text="@string/student_details"
+                    android:textColor="@color/hogwarts_text_title"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <!-- Espaciador para equilibrar el diseño -->
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+
+            <!-- Separador estético con el destello debajo del título -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="40dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#CCCCCC" />
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:scaleType="centerCrop"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/destello" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="#CCCCCC" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- CONTENEDOR CON SCROLL Y MÁRGENES DE SEGURIDAD -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            android:scrollbars="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="12dp"
+                app:cardBackgroundColor="@color/card_background"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="0dp">
+
+                <!-- CONTENEDOR INTERNO -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="24dp"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="32dp">
+
+                    <!-- Foto del Alumno Centrada -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imgDetailPhoto"
+                        android:src="@drawable/usuario"
+                        android:contentDescription="@string/photo_student"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:scaleType="centerCrop"
+                        app:shapeAppearanceOverlay="@style/RoundedImageViewBig" />
+
+                    <!-- Nombre Principal -->
+                    <TextView
+                        android:id="@+id/tvDetailName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:gravity="center"
+                        android:text="@string/loading_student"
+                        android:textColor="@color/hogwarts_text_title"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <!-- Estado real: oculto hasta obtener un alumno desde Room/API. -->
+                    <LinearLayout
+                        android:id="@+id/cacheStatusChip"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/shape_chip_cached"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp">
+
+                        <View
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:background="@drawable/shape_green_dot" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:text="@string/cached"
+                            android:textColor="@color/chip_cached_text"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="6dp"
+                            android:text="|"
+                            android:textColor="@color/hogwarts_text_muted"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/available_offline"
+                            android:textColor="@color/hogwarts_text_muted"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- DATOS VISIBLES DEL ALUMNO (6 CAMPOS) -->
+
+
+
+                    <!-- 1. Group / House -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/escudo" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/house" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailHouse" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_house" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="#EAEAEA" />
+
+                    <!-- 2. Species -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/usuario" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/species" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailSpecies" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_species" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="#EAEAEA" />
+
+                    <!-- 3. Gender -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/genero" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/gender" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailGender" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_gender" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="#EAEAEA" />
+
+                    <!-- 4. Date of Birth -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/calendario" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/birth" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailBirth" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_birth" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="#EAEAEA" />
+
+                    <!-- 5. Nationality -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/escudo" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/nationality" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailNationality" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_nationality" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="10dp" android:background="#EAEAEA" />
+
+                    <!-- 6. Patronus -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ciervo" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/patronus" android:textColor="@color/hogwarts_text_muted" android:textSize="12sp" />
+                            <TextView android:id="@+id/tvDetailPatronus" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/sample_patronus" android:textColor="@color/hogwarts_text_title" android:textSize="15sp" android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+
+
+                    <!-- Botones Inferiores (Save y New Search) -->
+                    <LinearLayout
+                        android:id="@+id/layoutActionButtons"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="28dp"
+                        android:orientation="horizontal">
+
+                        <!-- Botón Save -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSave"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/hogwarts_blue_btn"
+                            android:text="@string/save"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/white"
+                            app:cornerRadius="12dp" />
+
+                        <!-- Botón New Search -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnNewSearch"
+                            android:layout_width="0dp"
+                            android:layout_height="54dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1.4"
+                            android:minWidth="0dp"
+                            android:backgroundTint="@color/btn_secondary_bg"
+                            android:text="@string/new_search"
+                            android:textAllCaps="false"
+                            android:textColor="@color/hogwarts_text_title"
+                            android:textSize="12sp"
+                            android:singleLine="true"
+                            android:maxLines="1"
+                            android:gravity="center"
+                            android:paddingStart="4dp"
+                            android:paddingEnd="4dp"
+                            app:cornerRadius="12dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

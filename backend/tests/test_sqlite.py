@@ -1,0 +1,1 @@
+"""Módulo reservado para pruebas básicas de la base local SQLite."""

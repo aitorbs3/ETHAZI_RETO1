@@ -2,8 +2,9 @@
 # ENTORNOS VIRTUALES
 # =========================
 .venv/
-venv/
-env/
+.env
+__pycache__/
+*.pyc
 
 # =========================
 # PYTHON
@@ -48,3 +49,25 @@ htmlcov/
 *.swp
 .DS_Store
 Thumbs.db
+
+# =====================
+# TESTS
+# =====================
+
+prueba_h2/
+prueba_oracle/
+prueba_derby/
+prueba_hsqldb/
+prueba_mariadb/
+prueba_sqlite/
+
+# ==================
+# SQLITE
+# =================
+*.db
+backend/database/
+
+# Bases de datos locales
+data/databases/derby/
+data/databases/h2/
+data/databases/hsqldb/

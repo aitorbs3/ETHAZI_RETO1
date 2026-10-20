@@ -1,0 +1,131 @@
+services:
+
+  # ==========================================
+  # 1. BACKEND - API REST (FastAPI)
+  # ==========================================
+  backend-api:
+    # Construye la imagen del backend a partir del Dockerfile ubicado en la carpeta ./backend
+    build: ./backend
+    container_name: reto01-backend
+
+    # Exposición de puertos: mapea el puerto 8000 del contenedor al puerto 8000 de la máquina host
+    ports:
+      - "8000:8000"
+
+    # Variables de entorno inyectadas en tiempo de ejecución para la configuración de conectores
+    environment:
+      # Rutas internas para bases de datos basadas en ficheros (SQLite y motores históricos enlazados)
+      ETHAZI_SQL_DIR: /app/data/sql
+      SQLITE_DATABASE: /app/data/databases/sqlite_reto.db
+      DERBY_DATABASE: /app/data/databases/derby/gryffindor
+      H2_DATABASE: /app/data/databases/h2/hufflepuff/hufflepuff
+      HSQLDB_DATABASE: /app/data/databases/hsqldb/slytherin
+
+      # Configuración de MariaDB (Base de datos central remota)
+      # Nota: Se utiliza el nombre del servicio "mariadb" como host gracias a la red interna de Docker
+      MARIADB_HOST: mariadb
+      MARIADB_PORT: "3306"
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+
+      # Configuración de Oracle (Base de datos histórica - Casa Ravenclaw)
+      ORACLE_HOST: oracle
+      ORACLE_PORT: "1521"
+      ORACLE_SERVICE_NAME: ${ORACLE_SERVICE_NAME:-FREEPDB1}
+      ORACLE_USER: ${ORACLE_USER}
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+
+    # Volúmenes de Bind Mount: Mapea la carpeta local ./data del host dentro del contenedor en /app/data
+    # Permite que el backend lea/escriba en las bases de datos SQLite y ficheros históricos locales.
+    volumes:
+      - ./data:/app/data
+
+    # Control de dependencias y arranque condicional:
+    # Asegura que el backend no inicie hasta que las bases de datos estén completamente operativas y listas (healthy)
+    depends_on:
+      oracle:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+
+    # Política de reinicio automático ante fallos o reinicios del sistema operativo/Docker
+    restart: unless-stopped
+
+
+  # ==========================================
+  # 2. ORACLE DATABASE - CASA RAVENCLAW
+  # ==========================================
+  oracle:
+    # Utiliza la imagen ligera oficial optimizada de Oracle Database Free
+    image: gvenzl/oracle-free:latest
+    container_name: reto01-oracle
+
+    # Mapeo del puerto estándar de Oracle para acceso externo opcional desde herramientas de escritorio
+    ports:
+      - "1521:1521"
+
+    # Credenciales y configuración inicial del motor de Oracle mediante variables de entorno
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_ADMIN_PASSWORD}
+      APP_USER: ${ORACLE_USER}
+      APP_USER_PASSWORD: ${ORACLE_PASSWORD}
+
+    # Volumen persistente para asegurar que los datos de Oracle no se pierdan al apagar el contenedor
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+    # Healthcheck nativo de la imagen para verificar que Oracle ya acepta conexiones reales
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+    restart: unless-stopped
+
+
+  # ==========================================
+  # 3. MARIADB - HOGWARTHS (BD CENTRAL)
+  # ==========================================
+  mariadb:
+    # Utiliza la versión estable 11.8 de MariaDB
+    image: mariadb:11.8
+    container_name: reto01-mariadb
+
+    # Mapeo del puerto de MariaDB al host
+    ports:
+      - "3306:3306"
+
+    # Configuración de usuarios, contraseñas de root y base de datos por defecto
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+
+    # Volumen dedicado para la persistencia de las tablas y registros de MariaDB en el host
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+    # Healthcheck para comprobar que InnoDB se ha inicializado correctamente antes de dar el servicio por bueno
+    healthcheck:
+      test:
+        - CMD
+        - healthcheck.sh
+        - --connect
+        - --innodb_initialized
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+
+# ==========================================
+# 4. GESTIÓN DE VOLÚMENES PERSISTENTES
+# ==========================================
+volumes:
+  # Volúmenes administrados por Docker para almacenar los datos de los motores relacionales remotos
+  oracle_data:
+  mariadb_data:

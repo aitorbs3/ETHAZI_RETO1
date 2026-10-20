@@ -1,0 +1,1 @@
+"""Modelos de dominio y esquemas de intercambio de la API."""

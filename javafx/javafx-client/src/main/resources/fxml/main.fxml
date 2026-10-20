@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.ethazi.javafx.controller.MainController"
+            prefWidth="1250" prefHeight="760" styleClass="app-root">
+
+    <top>
+        <HBox fx:id="headerRow" spacing="16" alignment="CENTER_LEFT" styleClass="app-header">
+            <padding><Insets top="22" right="34" bottom="22" left="34"/></padding>
+            <VBox fx:id="headerTitle" spacing="4">
+                <Label text="%app.heading" wrapText="true" styleClass="title"/>
+                <Label text="%app.subtitle" wrapText="true" styleClass="subtitle"/>
+            </VBox>
+            <Region fx:id="headerSpacer" HBox.hgrow="ALWAYS"/>
+            <VBox fx:id="headerControls" spacing="7" alignment="CENTER_RIGHT">
+                <HBox spacing="7" alignment="CENTER_RIGHT">
+                    <Button fx:id="helpButton" text="%button.help" onAction="#handleHelp"
+                            styleClass="header-info-button"/>
+                    <Button fx:id="aboutButton" text="%button.about" onAction="#handleAbout"
+                            styleClass="header-info-button"/>
+                </HBox>
+                <HBox spacing="8" alignment="CENTER_RIGHT">
+                    <ComboBox fx:id="languageCombo" prefWidth="138" prefHeight="34"
+                              accessibleText="%access.language" onAction="#handleChangeLanguage"
+                              styleClass="language-selector"/>
+                </HBox>
+            </VBox>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane minWidth="0" minHeight="0" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED" styleClass="main-scroll">
+          <content>
+        <VBox fx:id="mainCenter" spacing="16" fillWidth="true">
+            <padding><Insets top="20" right="28" bottom="16" left="28"/></padding>
+            <HBox fx:id="searchRow" spacing="16" alignment="BOTTOM_LEFT" styleClass="search-card">
+                <VBox fx:id="searchBox" spacing="7" HBox.hgrow="ALWAYS">
+                    <Label text="%search.label" styleClass="field-label"/>
+                    <TextField fx:id="searchField" promptText="%search.prompt"
+                               accessibleText="%access.search"
+                               prefHeight="43" maxWidth="Infinity" styleClass="search-input"/>
+                </VBox>
+                <VBox fx:id="filterBox" spacing="7">
+                    <Label text="%filter.label" styleClass="field-label"/>
+                    <ComboBox fx:id="houseCombo" accessibleText="%access.house"
+                              prefWidth="230" prefHeight="43" maxWidth="Infinity"
+                              styleClass="database-selector"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="contentRow" spacing="16" VBox.vgrow="ALWAYS">
+                <VBox fx:id="tableCard" spacing="12" styleClass="content-card"
+                      HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="%students.heading" styleClass="section-heading"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="countLabel" text="0" styleClass="count-label"/>
+                    </HBox>
+                    <TableView fx:id="studentsTable" VBox.vgrow="ALWAYS"
+                               accessibleText="%access.studentsTable" styleClass="students-table">
+                        <columns>
+                            <TableColumn fx:id="nameColumn" text="%field.name" prefWidth="180"/>
+                            <TableColumn fx:id="houseColumn" text="%field.house" prefWidth="98"/>
+                            <TableColumn fx:id="speciesColumn" text="%field.species" prefWidth="105"/>
+                            <TableColumn fx:id="genderColumn" text="%field.gender" prefWidth="80"/>
+                            <TableColumn fx:id="birthColumn" text="%field.birth" prefWidth="108"/>
+                            <TableColumn fx:id="nationalityColumn" text="%field.nationality" prefWidth="132"/>
+                            <TableColumn fx:id="patronusColumn" text="%field.patronus" prefWidth="125"/>
+                        </columns>
+                        <placeholder><Label text="%students.empty"/></placeholder>
+                    </TableView>
+                </VBox>
+
+                <VBox fx:id="detailCard" spacing="16" minWidth="290" prefWidth="310"
+                      maxWidth="340" styleClass="content-card">
+                    <Label text="%detail.heading" styleClass="section-heading"/>
+                    <StackPane styleClass="avatar" minHeight="98" prefHeight="98" maxHeight="98" prefWidth="98" maxWidth="98">
+                        <ImageView fx:id="detailImage" fitWidth="98" fitHeight="98" preserveRatio="true" smooth="true" visible="false"/>
+                        <Label fx:id="detailInitials" text="—" styleClass="avatar-initials"/>
+                    </StackPane>
+                    <VBox spacing="5">
+                        <Label fx:id="detailName" text="%detail.noSelection" wrapText="true" styleClass="student-name"/>
+                    </VBox>
+                    <Region prefHeight="1" styleClass="thin-divider"/>
+                    <VBox spacing="15">
+                        <VBox spacing="4">
+                            <Label text="%field.house" styleClass="detail-caption"/>
+                            <Label fx:id="detailHouse" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="%field.species" styleClass="detail-caption"/>
+                            <Label fx:id="detailSpecies" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="%field.gender" styleClass="detail-caption"/>
+                            <Label fx:id="detailGender" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="%field.birth" styleClass="detail-caption"/>
+                            <Label fx:id="detailBirth" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="%field.nationality" styleClass="detail-caption"/>
+                            <Label fx:id="detailNationality" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <Label text="%field.patronus" styleClass="detail-caption"/>
+                            <Label fx:id="detailPatronus" text="—" wrapText="true" styleClass="detail-value"/>
+                        </VBox>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+          </content>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <VBox fx:id="footerBox" spacing="12" styleClass="footer">
+            <padding><Insets top="14" right="28" bottom="18" left="28"/></padding>
+            <HBox fx:id="footerRow" spacing="12" alignment="CENTER_LEFT">
+                <Button fx:id="addButton" text="%button.add" onAction="#handleAdd" styleClass="primary-button"/>
+                <Button fx:id="editButton" text="%button.edit" onAction="#handleEdit" styleClass="secondary-button"/>
+                <Button fx:id="deleteButton" text="%button.delete" onAction="#handleDelete" styleClass="secondary-button"/>
+                <Region fx:id="footerSpacer" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="refreshButton" text="%button.refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label fx:id="statusLabel" text="%status.waiting" wrapText="true" styleClass="status-label"/>
+            </HBox>
+            <Label fx:id="appInfoLabel" wrapText="true" styleClass="footer-version-label"/>
+        </VBox>
+    </bottom>
+</BorderPane>

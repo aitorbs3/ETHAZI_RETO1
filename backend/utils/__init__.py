@@ -1,0 +1,1 @@
+"""Utilidades compartidas de configuración e integración con Java."""
