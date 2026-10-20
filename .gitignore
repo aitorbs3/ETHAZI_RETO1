@@ -83,8 +83,6 @@ data/databases/hsqldb/
 [Bb]uilds/
 [Ll]ogs/
 [Uu]serSettings/
-unity/UNITYEXE/ETHAZI_R01_Unity_Data/sharedassets0.assets.resS
-unity/UNITYEXE/ETHAZI_R01_Unity_Data/sharedassets0.assets.resS
 
 # Archivos de Visual Studio
 .vs/
@@ -92,3 +90,5 @@ unity/UNITYEXE/ETHAZI_R01_Unity_Data/sharedassets0.assets.resS
 *.sln
 *.suo
 *.user
+
+unity/UNITYEXE/
