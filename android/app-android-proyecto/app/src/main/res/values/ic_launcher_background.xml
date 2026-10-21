@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- Archivo de recursos que define el color de fondo del icono de la aplicación. -->
 <resources>
+
+    <!-- Azul noche utilizado como fondo del icono de Hogwarts. -->
     <color name="ic_launcher_background">#071A33</color>
+
 </resources>

@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Archivo de recursos de colores de Android.
+    Permite centralizar la paleta de colores de la aplicación
+    para reutilizarla en layouts y otros recursos XML.
+-->
 <resources>
-    <!-- Azul noche oscuro para botones principales -->
+
+    <!-- Azul oscuro para los botones principales. -->
     <color name="hogwarts_blue_btn">#0E2A47</color>
+
+    <!-- Azul todavía más oscuro, para indicar que el botón está pulsado. -->
     <color name="hogwarts_blue_btn_pressed">#081B30</color>
 
-    <!-- Texto oscuro y secundario -->
+
+    <!-- Color principal para títulos y encabezados. -->
     <color name="hogwarts_text_title">#0F1E36</color>
+
+    <!-- Color para el texto normal de la aplicación. -->
     <color name="hogwarts_text_body">#2C3E50</color>
+
+    <!-- Color gris para textos secundarios o menos destacados. -->
     <color name="hogwarts_text_muted">#7F8C8D</color>
 
-    <!-- Fondos de tarjetas y chips -->
+
+    <!-- Color de fondo de las tarjetas de información. -->
     <color name="card_background">#FAFAFA</color>
+
+    <!-- Color de fondo de los campos de entrada de datos. -->
     <color name="input_background">#F0F3F6</color>
+
+    <!-- Fondo verde claro para indicar que los datos proceden de la caché. -->
     <color name="chip_cached_bg">#E8F5E9</color>
+
+    <!-- Texto verde oscuro que aparece sobre el fondo del indicador de caché. -->
     <color name="chip_cached_text">#2E7D32</color>
+
+    <!-- Verde utilizado para representar visualmente un estado activo o correcto. -->
     <color name="status_green_dot">#4CAF50</color>
 
-    <!-- Botón secundario -->
+
+    <!-- Color de fondo del botón secundario, menos destacado que el principal. -->
     <color name="btn_secondary_bg">#E2E7EC</color>
+
 </resources>

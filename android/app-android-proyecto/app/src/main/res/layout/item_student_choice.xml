@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Diseño de una fila que representa a un alumno en una lista
+    de selección. Muestra su fotografía, nombre y casa de Hogwarts.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="64dp"
@@ -10,6 +16,7 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
+    <!-- Fotografía del alumno. -->
     <ImageView
         android:id="@+id/imgChoicePhoto"
         android:layout_width="52dp"
@@ -19,28 +26,36 @@
         android:src="@drawable/usuario"
         android:contentDescription="@string/photo_student" />
 
+    <!-- Contenedor de los textos del alumno.
+         width=0dp junto con weight=1 hace que ocupe el espacio
+         horizontal restante después de colocar la fotografía. -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvChoiceName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/student_name"
-        android:textColor="@color/hogwarts_text_title"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        <!-- Nombre del alumno.
+             El ID permite actualizar este texto desde Kotlin. -->
+        <TextView
+            android:id="@+id/tvChoiceName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/student_name"
+            android:textColor="@color/hogwarts_text_title"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/tvChoiceHouse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/choice_house_sample"
-        android:textColor="@color/hogwarts_text_body"
-        android:textSize="13sp" />
+        <!-- Casa de Hogwarts a la que pertenece el alumno.
+             Tiene un pequeño margen superior para separar ambos textos. -->
+        <TextView
+            android:id="@+id/tvChoiceHouse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/choice_house_sample"
+            android:textColor="@color/hogwarts_text_body"
+            android:textSize="13sp" />
+
     </LinearLayout>
 </LinearLayout>

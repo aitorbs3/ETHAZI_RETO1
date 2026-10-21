@@ -1,75 +1,268 @@
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Euskara erabiltzen duen aplikazioaren testu-baliabideen fitxategia.
+    Archivo de recursos de texto en euskera de la aplicación.
+    Centraliza los textos de la interfaz para facilitar la traducción
+    y el mantenimiento de la aplicación Hogwarts.
+-->
 <resources>
+
+    <!-- Nombre de la aplicación que aparece en Android. -->
     <string name="app_name">Hogwarts</string>
+
+    <!-- Título principal de la interfaz en euskera. -->
     <string name="app_title">Hogwarts Mugikorra</string>
+
+    <!-- Texto que identifica la sección de búsqueda de alumnos. -->
     <string name="student_lookup">Ikasleen bilaketa</string>
+
+    <!-- Texto de ayuda que aparece dentro del campo de búsqueda. -->
     <string name="search_hint">Bilatu IDaren edo izenaren arabera</string>
+
+    <!-- Texto del botón que inicia la búsqueda. -->
     <string name="search_button">Bilatu ✦</string>
+
+    <!-- Texto del botón para configurar la conexión con la API. -->
     <string name="config_api">Konfiguratu APIa</string>
+
+    <!-- Texto del botón que comprueba la conexión con el servidor. -->
     <string name="test_connection">Probatu konexioa</string>
+
+    <!-- Etiqueta que identifica la última búsqueda realizada. -->
     <string name="last_search">Azken bilaketa</string>
+
+    <!-- Mensaje que indica que la caché local no está disponible. -->
     <string name="local_cache_unavailable">Cachea ez dago erabilgarri</string>
+
+    <!-- Mensaje mostrado cuando no hay alumnos guardados para consultarlos sin conexión. -->
     <string name="offline_unavailable">Oraindik ez dago konexiorik gabe erabiltzeko ikaslerik gordeta</string>
+
+    <!-- Mensaje mostrado cuando el alumno solicitado no está guardado localmente. -->
     <string name="offline_student_unavailable">Ikasle hau ez dago oraindik konexiorik gabe erabiltzeko gordeta</string>
+
+    <!-- Mensaje que indica que la caché local está activada. -->
     <string name="local_cache_enabled">Tokiko cachea aktibatuta</string>
+
+    <!-- Mensaje que indica que los alumnos consultados anteriormente están disponibles sin conexión. -->
     <string name="offline_available">Aurrez kontsultatutako ikasleak konexiorik gabe eskuragarri</string>
+
+    <!-- Título de la sección de vista previa del alumno. -->
     <string name="student_preview">IKASLEAREN AURREBISTA</string>
+
+    <!-- Texto mostrado cuando no hay una vista previa disponible. -->
     <string name="no_preview">Ez dago aurrebistarik</string>
+
+    <!-- Etiqueta que identifica la procedencia de los datos. -->
     <string name="source">Jatorria</string>
+
+    <!-- Título de la pantalla que muestra los datos detallados del alumno. -->
     <string name="student_details">Ikaslearen xehetasunak</string>
+
+    <!-- Texto del botón para volver a la pantalla anterior. -->
     <string name="back">Atzera</string>
+
+    <!-- Mensaje mostrado mientras se cargan los datos del alumno. -->
     <string name="loading_student">Ikaslea kargatzen...</string>
+
+    <!-- Etiqueta que indica que los datos se han recuperado de la caché. -->
     <string name="cached">Cachean</string>
+
+    <!-- Etiqueta que indica que los datos pueden consultarse sin conexión. -->
     <string name="available_offline">Konexiorik gabe eskuragarri</string>
+
+    <!-- Etiqueta que identifica al alumno mediante su ID. -->
     <string name="student_id">Ikaslearen IDa</string>
+
+    <!-- Etiqueta del alias del alumno. -->
     <string name="alias">Ezizena</string>
+
+    <!-- Etiqueta de la casa de Hogwarts a la que pertenece el alumno. -->
     <string name="house">Etxea</string>
+
+    <!-- Etiqueta que indica la especie del alumno. -->
     <string name="species">Espeziea</string>
+
+    <!-- Etiqueta que indica el género del alumno. -->
     <string name="gender">Generoa</string>
+
+    <!-- Etiqueta de la fecha de nacimiento del alumno. -->
     <string name="birth">Jaioteguna</string>
+
+    <!-- Etiqueta de la nacionalidad del alumno. -->
     <string name="nationality">Nazionalitatea</string>
+
+    <!-- Etiqueta que identifica el Patronus del alumno. -->
     <string name="patronus">Patronusa</string>
+
+    <!-- Etiqueta que indica el origen del Patronus. -->
     <string name="patronus_origin">Patronusaren jatorria</string>
+
+    <!-- Etiqueta de la base de datos de procedencia de los datos. -->
     <string name="source_database">Jatorrizko datu-basea</string>
+
+    <!-- Texto del botón para guardar la información correspondiente. -->
     <string name="save">Gorde</string>
+
+    <!-- Texto del botón para iniciar una nueva búsqueda. -->
     <string name="new_search">Bilaketa berria</string>
+
+    <!-- Etiqueta que identifica el nombre completo del alumno. -->
     <string name="student_name">Izen-abizenak</string>
+
+    <!-- Texto de ejemplo que muestra una casa de Hogwarts. -->
     <string name="choice_house_sample">Etxea: Gryffindor</string>
+
+    <!-- Texto utilizado para indicar que no existe ningún valor. -->
     <string name="none">Bat ere ez</string>
+
+    <!-- Texto genérico para indicar que un dato no está disponible. -->
     <string name="unavailable">Ez dago erabilgarri</string>
+
+    <!-- Etiqueta del selector de idioma de la aplicación. -->
     <string name="language_label">Hizkuntza:</string>
+
+    <!-- Descripción accesible de la fotografía del alumno. -->
     <string name="photo_student">Ikaslearen argazkia</string>
+
+    <!-- Descripción accesible del fondo de Hogwarts. -->
     <string name="cd_background">Hogwartseko atzeko planoa</string>
+
+    <!-- Valor de ejemplo para la casa del alumno. -->
     <string name="sample_house">Ravenclaw</string>
+
+    <!-- Valor de ejemplo para la especie del alumno. -->
     <string name="sample_species">Human</string>
+
+    <!-- Valor de ejemplo para el género del alumno. -->
     <string name="sample_gender">Male</string>
+
+    <!-- Valor de ejemplo para la fecha de nacimiento. -->
     <string name="sample_birth">14 March 2007</string>
+
+    <!-- Valor de ejemplo para la nacionalidad del alumno. -->
     <string name="sample_nationality">British or Irish</string>
+
+    <!-- Valor de ejemplo para el Patronus del alumno. -->
     <string name="sample_patronus">Stag</string>
+
+    <!-- Valor de ejemplo para la base de datos de procedencia. -->
     <string name="sample_source">Hogwarts Main Database</string>
+
+    <!-- Instrucción que solicita introducir el ID o nombre del alumno. -->
     <string name="enter_student">Idatzi ikaslearen IDa edo izena</string>
+
+    <!-- Mensaje mostrado cuando no existen búsquedas anteriores. -->
     <string name="no_past_search">Ez dago aurreko bilaketarik</string>
+
+    <!-- Mensaje de confirmación cuando la API responde correctamente. -->
     <string name="api_connected">APIra behar bezala konektatu da</string>
+
+    <!--
+        Mensaje de error HTTP.
+        %1$d se sustituye por el código de estado HTTP recibido,
+        por ejemplo, 404 o 500.
+    -->
     <string name="api_http">FastAPIk HTTP %1$d itzuli du</string>
+
+    <!--
+        Mensaje de error de conexión.
+        %1$s se sustituye por la descripción del error.
+    -->
     <string name="connection_error">Konexio-errorea: %1$s</string>
+
+    <!-- Título del campo donde se configura la dirección de FastAPI. -->
     <string name="server_title">FastAPIren helbidea</string>
+
+    <!--
+        Instrucciones para configurar la dirección de la API.
+        127.0.0.1 se utiliza cuando se accede mediante adb reverse.
+        10.0.2.2 permite al emulador Android acceder al ordenador anfitrión.
+        En un móvil físico se utiliza la IP del ordenador conectado a la misma Wi-Fi.
+        \n representa un salto de línea dentro del texto.
+    -->
     <string name="server_hint">Emuladorea adb reverse erabiliz: http://127.0.0.1:8000/\nEmuladorea adb reverse gabe: http://10.0.2.2:8000/\nTelefono fisikoa: http://ORDENAGAILUAREN_IPA:8000/ (Wi-Fi bera)</string>
+
+    <!-- Texto del botón para cancelar una operación. -->
     <string name="cancel">Utzi</string>
+
+    <!-- Texto del botón para guardar la dirección del servidor. -->
     <string name="save_server">Gorde</string>
+
+    <!-- Mensaje mostrado cuando la dirección del servidor se ha guardado. -->
     <string name="server_saved">Zerbitzaria gorde da</string>
+
+    <!--
+        Mensaje mostrado cuando no se encuentran alumnos coincidentes.
+        %1$s se sustituye por el texto introducido en la búsqueda.
+    -->
     <string name="no_students">Ez da «%1$s» bilaketarekin bat datorren ikaslerik aurkitu</string>
+
+    <!-- Mensaje que indica que no se ha encontrado el alumno solicitado. -->
     <string name="student_not_found">Ez da ikaslea aurkitu</string>
+
+    <!-- Mensaje de error cuando falla la búsqueda y se debe comprobar la conexión. -->
     <string name="search_error">Ezin izan da bilaketa egin. Egiaztatu konexioa «Konfiguratu APIa» atalean.</string>
+
+    <!-- Nombre utilizado cuando no se conoce el nombre del alumno. -->
     <string name="unknown_name">Izen ezezaguna</string>
+
+    <!-- Valor utilizado cuando no se conoce la casa del alumno. -->
     <string name="unknown_house">Ezezaguna</string>
+
+    <!--
+        Mensaje que muestra la casa seleccionada.
+        %1$s se sustituye por el nombre de la casa.
+    -->
     <string name="choice_house">Etxea: %1$s</string>
+
+    <!--
+        Título que muestra el número de alumnos encontrados y el criterio de búsqueda.
+        %1$d se sustituye por el número de alumnos.
+        %2$s se sustituye por el texto buscado.
+    -->
     <string name="choice_title">%1$d ikasle «%2$s» bilaketarako</string>
+
+    <!-- Mensaje mostrado cuando no se puede abrir la ficha seleccionada. -->
     <string name="cant_open_student">Ezin izan da aukeratutako ikaslearen fitxa ireki</string>
+
+    <!-- Mensaje que solicita introducir un alumno antes de buscar. -->
     <string name="no_student_query">Idatzi bilatu beharreko ikaslea</string>
+
+    <!-- Mensaje mostrado cuando no se pueden cargar los datos del alumno. -->
     <string name="load_failed">Ezin izan da ikaslea kargatu</string>
+
+    <!--
+        Mensaje que indica que no se han encontrado alumnos.
+        %1$s se sustituye por el identificador o nombre buscado.
+    -->
     <string name="missing_student">Ez da «%1$s» bilaketarekin bat datorren ikaslerik aurkitu.</string>
+
+    <!--
+        Mensaje de error HTTP.
+        %1$d se sustituye por el código de estado HTTP recibido.
+    -->
     <string name="http_error">HTTP %1$d: APIaren erantzuna.</string>
+
+    <!--
+        Mensaje mostrado cuando no se puede conectar con el servidor.
+        %1$s se sustituye por la dirección de la API.
+        También orienta al usuario para comprobar Docker y la configuración.
+    -->
     <string name="network_error">Ezin izan da %1$s helbidera konektatu. Egiaztatu Docker eta «Konfiguratu APIa» ataleko helbidea.</string>
+
+    <!-- Mensaje genérico para errores que no tienen una descripción específica. -->
     <string name="unknown_error">Errore ezezaguna</string>
+
+    <!--
+        Mensaje mostrado cuando la URL introducida no es válida.
+        Incluye un ejemplo de dirección válida.
+    -->
     <string name="invalid_api_url">Idatzi baliozko URLa; adibidez, http://127.0.0.1:8000/</string>
+
+    <!-- Texto utilizado cuando no se conoce la base de datos de procedencia. -->
     <string name="unknown_source">Datu-base ezezaguna</string>
+
 </resources>
+```

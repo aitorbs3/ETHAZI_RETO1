@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    Layout principal de la pantalla de inicio.
+    FrameLayout permite superponer elementos: en este caso,
+    la imagen de fondo queda detrás del contenido de la aplicación.
+-->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,7 +12,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Imagen de Fondo ilustrada -->
+    <!-- Imagen de fondo que ocupa toda la pantalla.
+         centerCrop ajusta la imagen al espacio disponible,
+         recortando los bordes si es necesario. -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,18 +22,24 @@
         android:src="@drawable/fondo_app"
         android:contentDescription="@string/cd_background" />
 
+    <!-- Permite desplazarse verticalmente si el contenido
+         supera la altura de la pantalla.
+         fillViewport hace que el contenido ocupe como mínimo
+         toda la altura disponible. -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
+        <!-- Contenedor vertical de los elementos de la interfaz.
+             padding añade espacio interior de 24 dp. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Logo de la estrella superior más grande (Destello) -->
+            <!-- Logotipo decorativo de la aplicación. -->
             <ImageView
                 android:layout_width="64dp"
                 android:layout_height="64dp"
@@ -35,7 +49,9 @@
                 android:adjustViewBounds="true"
                 android:src="@drawable/destello" />
 
-            <!-- Título Principal -->
+            <!-- Título principal.
+                 El texto se obtiene de strings.xml para facilitar
+                 su traducción a diferentes idiomas. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +63,7 @@
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
-            <!-- Subtítulo -->
+            <!-- Subtítulo que indica la función de búsqueda de alumnos. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,7 +72,10 @@
                 android:textColor="@color/hogwarts_text_title"
                 android:textSize="14sp" />
 
-            <!-- Selector de idioma: cambia interfaz completa, no los datos del alumno. -->
+            <!-- Selector de idioma.
+                 MainActivity y LanguageManager gestionan el cambio
+                 de idioma de la interfaz, sin traducir los datos
+                 originales de los alumnos. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,6 +83,7 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
+                <!-- Etiqueta del selector de idioma. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,6 +91,9 @@
                     android:textColor="@color/hogwarts_text_title"
                     android:textStyle="bold" />
 
+                <!-- Spinner: lista desplegable de idiomas.
+                     Su ID permite localizarlo desde Kotlin con findViewById
+                     o mediante el sistema de View Binding utilizado. -->
                 <Spinner
                     android:id="@+id/spinnerLanguage"
                     android:layout_width="wrap_content"
@@ -79,7 +102,9 @@
                     android:contentDescription="@string/language_label" />
             </LinearLayout>
 
-            <!-- Campo de Texto de Búsqueda -->
+            <!-- Tarjeta que contiene el campo de búsqueda.
+                 MaterialCardView aporta esquinas redondeadas
+                 y permite personalizar el fondo. -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
@@ -89,6 +114,7 @@
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp">
 
+                <!-- Organiza horizontalmente el icono y el campo de texto. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -96,12 +122,17 @@
                     android:orientation="horizontal"
                     android:paddingHorizontal="16dp">
 
-                    <!-- Icono de Lupa -->
+                    <!-- Icono decorativo de la lupa. -->
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/lupa" />
 
+                    <!-- Campo donde el usuario introduce el ID o el nombre.
+                         El ID permite recuperar el texto desde Kotlin.
+                         background="@null" elimina el fondo predeterminado.
+                         imeOptions="actionSearch" configura la acción
+                         de búsqueda en el teclado virtual. -->
                     <EditText
                         android:id="@+id/etSearchQuery"
                         android:layout_width="match_parent"
@@ -117,7 +148,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Botón Principal "Search ✦" -->
+            <!-- Botón que inicia la búsqueda.
+                 MainActivity debe asociar una acción a este ID
+                 para procesar el texto introducido. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSearch"
                 android:layout_width="match_parent"
@@ -131,7 +164,9 @@
                 app:cornerRadius="27dp"
                 app:elevation="4dp" />
 
-            <!-- Dirección de FastAPI configurable: emulador o dispositivo físico -->
+            <!-- Botón para abrir la configuración de la URL del servidor
+                 FastAPI, por ejemplo, para adaptar la dirección al
+                 emulador o a un dispositivo físico. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnServerSettings"
                 android:layout_width="match_parent"
@@ -141,6 +176,8 @@
                 android:textAllCaps="false"
                 app:cornerRadius="16dp" />
 
+            <!-- Botón para comprobar la conexión con la API.
+                 La comprobación real debe implementarse en Kotlin. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTestApi"
                 android:layout_width="match_parent"
@@ -150,6 +187,8 @@
                 android:textAllCaps="false"
                 app:cornerRadius="16dp" />
 
+            <!-- Muestra la URL actual del servidor.
+                 Su contenido puede actualizarse desde MainActivity. -->
             <TextView
                 android:id="@+id/tvServerUrl"
                 android:layout_width="match_parent"
@@ -159,7 +198,7 @@
                 android:textColor="@color/hogwarts_text_muted"
                 android:textSize="12sp" />
 
-            <!-- Tarjeta: Last search -->
+            <!-- Tarjeta que muestra información sobre la última búsqueda. -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardLastSearch"
                 android:layout_width="match_parent"
@@ -170,6 +209,8 @@
                 app:cardElevation="2dp"
                 app:strokeWidth="0dp">
 
+                <!-- Distribuye horizontalmente el icono, los textos
+                     y el icono de descarga. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -177,12 +218,15 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <!-- Icono de Reloj -->
+                    <!-- Icono que representa el historial de búsquedas. -->
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/reloj" />
 
+                    <!-- Contenedor de la etiqueta y el ID de la última búsqueda.
+                         width=0dp junto con layout_weight=1 permite
+                         aprovechar el espacio horizontal disponible. -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -190,6 +234,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
+                        <!-- Etiqueta descriptiva de la tarjeta. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -197,6 +242,9 @@
                             android:textColor="@color/hogwarts_text_muted"
                             android:textSize="12sp" />
 
+                        <!-- ID de la última búsqueda.
+                             El guion largo es el valor inicial cuando
+                             todavía no hay una búsqueda registrada. -->
                         <TextView
                             android:id="@+id/tvLastSearchId"
                             android:layout_width="wrap_content"
@@ -207,7 +255,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Icono de Descarga -->
+                    <!-- Icono decorativo de descarga. -->
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
@@ -215,7 +263,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Tarjeta: Local cache enabled -->
+            <!-- Tarjeta informativa sobre la caché local. -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -232,12 +280,13 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <!-- Icono de Database -->
+                    <!-- Icono que representa una base de datos. -->
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/database" />
 
+                    <!-- Información textual del estado de la caché. -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -245,6 +294,8 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
+                        <!-- Título del estado de la caché.
+                             Su texto puede cambiar dinámicamente desde Kotlin. -->
                         <TextView
                             android:id="@+id/tvCacheTitle"
                             android:layout_width="wrap_content"
@@ -254,6 +305,7 @@
                             android:textSize="14sp"
                             android:textStyle="bold" />
 
+                        <!-- Explicación del estado de disponibilidad sin conexión. -->
                         <TextView
                             android:id="@+id/tvCacheDescription"
                             android:layout_width="wrap_content"
@@ -263,7 +315,9 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <!-- Estado real de Room: gris al inicio, verde si hay caché. -->
+                    <!-- Indicador visual del estado de la caché Room.
+                         Comienza con un punto gris; Kotlin puede cambiar
+                         su fondo cuando detecta datos locales disponibles. -->
                     <View
                         android:id="@+id/cacheStatusIndicator"
                         android:layout_width="12dp"
@@ -272,7 +326,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Separador estético con destello -->
+            <!-- Separador visual que introduce la vista previa del alumno. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -280,17 +334,20 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
+                <!-- Línea decorativa izquierda. -->
                 <View
                     android:layout_width="40dp"
                     android:layout_height="1dp"
                     android:background="#CCCCCC" />
 
+                <!-- Destello decorativo izquierdo. -->
                 <ImageView
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:layout_marginHorizontal="8dp"
                     android:src="@drawable/destello" />
 
+                <!-- Texto que identifica la sección de vista previa. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -300,19 +357,23 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
+                <!-- Destello decorativo derecho. -->
                 <ImageView
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:layout_marginHorizontal="8dp"
                     android:src="@drawable/destello" />
 
+                <!-- Línea decorativa derecha. -->
                 <View
                     android:layout_width="40dp"
                     android:layout_height="1dp"
                     android:background="#CCCCCC" />
             </LinearLayout>
 
-            <!-- Tarjeta: STUDENT PREVIEW -->
+            <!-- Tarjeta que muestra un resumen del alumno encontrado.
+                 MainActivity puede actualizar sus vistas con los datos
+                 recibidos de la API o recuperados de la caché local. -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardStudentPreview"
                 android:layout_width="match_parent"
@@ -323,6 +384,8 @@
                 app:cardElevation="3dp"
                 app:strokeWidth="0dp">
 
+                <!-- Organiza la fotografía, los datos y la flecha
+                     en una única fila horizontal. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -330,7 +393,10 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <!-- Foto del Alumno -->
+                    <!-- Fotografía del alumno.
+                         ShapeableImageView permite aplicar una forma
+                         personalizada mediante RoundedImageView.
+                         usuario es la imagen inicial o de sustitución. -->
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imgPreview"
                         android:src="@drawable/usuario"
@@ -340,7 +406,10 @@
                         android:scaleType="centerCrop"
                         app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
-                    <!-- Información resumen -->
+                    <!-- Contenedor vertical de los datos resumidos del alumno.
+                         El peso permite que ocupe el espacio sobrante
+                         después de reservar espacio para la fotografía
+                         y la flecha. -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -348,6 +417,9 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
+                        <!-- Nombre del alumno.
+                             no_preview es el texto inicial si aún
+                             no se ha seleccionado ningún alumno. -->
                         <TextView
                             android:id="@+id/tvPreviewName"
                             android:layout_width="wrap_content"
@@ -358,12 +430,15 @@
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
+                        <!-- Fila horizontal que agrupa la etiqueta ID
+                             y el identificador real del alumno. -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:orientation="horizontal">
 
+                            <!-- Etiqueta fija del identificador. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -371,6 +446,8 @@
                                 android:textColor="@color/hogwarts_text_muted"
                                 android:textSize="12sp" />
 
+                            <!-- Identificador del alumno.
+                                 El guion indica que todavía no hay datos. -->
                             <TextView
                                 android:id="@+id/tvPreviewId"
                                 android:layout_width="wrap_content"
@@ -381,6 +458,7 @@
                                 android:textStyle="bold" />
                         </LinearLayout>
 
+                        <!-- Etiqueta del origen de los datos del alumno. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -389,6 +467,9 @@
                             android:textColor="@color/hogwarts_text_muted"
                             android:textSize="11sp" />
 
+                        <!-- Origen de los datos.
+                             Kotlin puede indicar, por ejemplo,
+                             si proceden de la API o de la caché local. -->
                         <TextView
                             android:id="@+id/tvPreviewSource"
                             android:layout_width="wrap_content"
@@ -397,6 +478,7 @@
                             android:textColor="@color/hogwarts_text_body"
                             android:textSize="12sp" />
 
+                        <!-- Etiqueta del patronus del alumno. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -405,6 +487,8 @@
                             android:textColor="@color/hogwarts_text_muted"
                             android:textSize="11sp" />
 
+                        <!-- Valor del patronus.
+                             Se actualiza cuando se cargan los datos del alumno. -->
                         <TextView
                             android:id="@+id/tvPreviewPatronus"
                             android:layout_width="wrap_content"
@@ -414,7 +498,8 @@
                             android:textSize="12sp" />
                     </LinearLayout>
 
-                    <!-- Icono de detalle -->
+                    <!-- Flecha que sugiere que existe una vista de detalle.
+                         La navegación debe gestionarse desde Kotlin. -->
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
