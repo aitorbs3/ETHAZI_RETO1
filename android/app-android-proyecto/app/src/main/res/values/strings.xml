@@ -1,134 +1,133 @@
-```xml
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-    Archivo de recursos de texto de Android.
-    Centraliza los textos que utiliza la aplicación Hogwarts
-    para mostrarlos en la interfaz y facilitar su traducción.
+    Archivo de recursos de texto en inglés de la aplicación Hogwarts.
+    Permite centralizar los textos de la interfaz para facilitar
+    la internacionalización y el mantenimiento de la aplicación.
 -->
 <resources>
 
     <!-- Nombre de la aplicación que aparece en Android. -->
     <string name="app_name">Hogwarts</string>
 
-    <!-- Título principal que se muestra en la interfaz. -->
-    <string name="app_title">Hogwarts Móvil</string>
+    <!-- Título principal de la interfaz en inglés. -->
+    <string name="app_title">Hogwarts Mobile</string>
 
     <!-- Texto que identifica la sección de consulta de alumnos. -->
-    <string name="student_lookup">Consulta de alumnos</string>
+    <string name="student_lookup">Student lookup</string>
 
     <!-- Texto de ayuda que aparece dentro del campo de búsqueda. -->
-    <string name="search_hint">Buscar por ID o nombre</string>
+    <string name="search_hint">Search by ID or name</string>
 
-    <!-- Texto del botón que inicia la búsqueda de alumnos. -->
-    <string name="search_button">Buscar ✦</string>
+    <!-- Texto del botón que inicia la búsqueda. -->
+    <string name="search_button">Search ✦</string>
 
-    <!-- Texto del botón para configurar la dirección de la API. -->
-    <string name="config_api">Configurar API</string>
+    <!-- Texto del botón para configurar la conexión con la API. -->
+    <string name="config_api">Configure API</string>
 
-    <!-- Texto del botón que comprueba si la API responde correctamente. -->
-    <string name="test_connection">Probar conexión</string>
+    <!-- Texto del botón que comprueba la conexión con el servidor. -->
+    <string name="test_connection">Test connection</string>
 
     <!-- Etiqueta que identifica la última búsqueda realizada. -->
-    <string name="last_search">Última búsqueda</string>
+    <string name="last_search">Last search</string>
 
     <!-- Mensaje que indica que la caché local no está disponible. -->
-    <string name="local_cache_unavailable">Caché no disponible</string>
+    <string name="local_cache_unavailable">Cache unavailable</string>
 
     <!-- Mensaje mostrado cuando no hay alumnos guardados para consultarlos sin conexión. -->
-    <string name="offline_unavailable">Aún no hay alumnos guardados sin conexión</string>
+    <string name="offline_unavailable">No students are stored for offline access yet</string>
 
     <!-- Mensaje mostrado cuando el alumno solicitado no está guardado localmente. -->
-    <string name="offline_student_unavailable">Este alumno todavía no está guardado sin conexión</string>
+    <string name="offline_student_unavailable">This student is not saved for offline access yet</string>
 
     <!-- Mensaje que indica que la caché local está activada. -->
-    <string name="local_cache_enabled">Caché local activada</string>
+    <string name="local_cache_enabled">Local cache enabled</string>
 
-    <!-- Mensaje que indica que los alumnos consultados pueden recuperarse sin conexión. -->
-    <string name="offline_available">Alumnos consultados disponibles sin conexión</string>
+    <!-- Mensaje que indica que los alumnos consultados anteriormente están disponibles sin conexión. -->
+    <string name="offline_available">Previously viewed students available offline</string>
 
-    <!-- Título de la sección que muestra una vista previa del alumno. -->
-    <string name="student_preview">VISTA PREVIA DEL ALUMNO</string>
+    <!-- Título de la sección de vista previa del alumno. -->
+    <string name="student_preview">STUDENT PREVIEW</string>
 
-    <!-- Texto mostrado cuando no existe una vista previa disponible. -->
-    <string name="no_preview">Sin previsualización</string>
+    <!-- Texto mostrado cuando no hay una vista previa disponible. -->
+    <string name="no_preview">No preview</string>
 
     <!-- Etiqueta que identifica la procedencia de los datos. -->
-    <string name="source">Origen</string>
+    <string name="source">Source</string>
 
-    <!-- Título de la pantalla con la información detallada del alumno. -->
-    <string name="student_details">Detalles del alumno</string>
+    <!-- Título de la pantalla con los datos detallados del alumno. -->
+    <string name="student_details">Student details</string>
 
-    <!-- Texto del botón para regresar a la pantalla anterior. -->
-    <string name="back">Volver</string>
+    <!-- Texto del botón para volver a la pantalla anterior. -->
+    <string name="back">Back</string>
 
-    <!-- Mensaje mostrado mientras se recuperan los datos de un alumno. -->
-    <string name="loading_student">Cargando alumno...</string>
+    <!-- Mensaje mostrado mientras se cargan los datos de un alumno. -->
+    <string name="loading_student">Loading student...</string>
 
-    <!-- Etiqueta que indica que los datos proceden de la caché. -->
-    <string name="cached">En caché</string>
+    <!-- Etiqueta que indica que los datos se han recuperado de la caché. -->
+    <string name="cached">Cached</string>
 
     <!-- Etiqueta que indica que los datos pueden consultarse sin conexión. -->
-    <string name="available_offline">Disponible sin conexión</string>
+    <string name="available_offline">Available offline</string>
 
-    <!-- Etiqueta del identificador único del alumno. -->
-    <string name="student_id">ID del alumno</string>
+    <!-- Etiqueta que identifica al alumno mediante su ID. -->
+    <string name="student_id">Student ID</string>
 
     <!-- Etiqueta del alias del alumno. -->
     <string name="alias">Alias</string>
 
     <!-- Etiqueta de la casa de Hogwarts a la que pertenece el alumno. -->
-    <string name="house">Casa</string>
+    <string name="house">House</string>
 
-    <!-- Etiqueta de la especie del alumno. -->
-    <string name="species">Especie</string>
+    <!-- Etiqueta que indica la especie del alumno. -->
+    <string name="species">Species</string>
 
-    <!-- Etiqueta del género del alumno. -->
-    <string name="gender">Género</string>
+    <!-- Etiqueta que indica el género del alumno. -->
+    <string name="gender">Gender</string>
 
     <!-- Etiqueta de la fecha de nacimiento del alumno. -->
-    <string name="birth">Fecha de nacimiento</string>
+    <string name="birth">Date of birth</string>
 
     <!-- Etiqueta de la nacionalidad del alumno. -->
-    <string name="nationality">Nacionalidad</string>
+    <string name="nationality">Nationality</string>
 
-    <!-- Etiqueta del Patronus asociado al alumno. -->
+    <!-- Etiqueta que identifica el Patronus del alumno. -->
     <string name="patronus">Patronus</string>
 
     <!-- Etiqueta que indica el origen del Patronus. -->
-    <string name="patronus_origin">Origen del patronus</string>
+    <string name="patronus_origin">Patronus origin</string>
 
-    <!-- Etiqueta de la base de datos de la que proceden los datos. -->
-    <string name="source_database">Base de datos de origen</string>
+    <!-- Etiqueta de la base de datos de procedencia de los datos. -->
+    <string name="source_database">Source database</string>
 
-    <!-- Texto del botón para guardar la configuración o los datos correspondientes. -->
-    <string name="save">Guardar</string>
+    <!-- Texto del botón para guardar la información correspondiente. -->
+    <string name="save">Save</string>
 
-    <!-- Texto del botón para iniciar una nueva búsqueda. -->
-    <string name="new_search">Nueva búsqueda</string>
+    <!-- Texto del botón para iniciar una búsqueda nueva. -->
+    <string name="new_search">New search</string>
 
-    <!-- Etiqueta del nombre completo del alumno. -->
-    <string name="student_name">Nombre completo</string>
+    <!-- Etiqueta que identifica el nombre completo del alumno. -->
+    <string name="student_name">Full name</string>
 
     <!-- Texto de ejemplo que muestra una casa de Hogwarts. -->
-    <string name="choice_house_sample">Casa: Gryffindor</string>
+    <string name="choice_house_sample">House: Gryffindor</string>
 
-    <!-- Texto utilizado para indicar que no existe un valor asociado. -->
-    <string name="none">Ninguno</string>
+    <!-- Texto utilizado para indicar que no existe ningún valor. -->
+    <string name="none">None</string>
 
     <!-- Texto genérico para indicar que un dato no está disponible. -->
-    <string name="unavailable">No disponible</string>
+    <string name="unavailable">Not available</string>
 
     <!-- Etiqueta del selector de idioma de la aplicación. -->
-    <string name="language_label">Idioma:</string>
+    <string name="language_label">Language:</string>
 
-    <!-- Descripción de la fotografía del alumno. -->
-    <string name="photo_student">Foto del alumno</string>
+    <!-- Descripción accesible de la fotografía del alumno. -->
+    <string name="photo_student">Student photo</string>
 
     <!-- Descripción accesible del fondo de Hogwarts. -->
-    <string name="cd_background">Fondo de Hogwarts</string>
+    <string name="cd_background">Hogwarts background</string>
 
-    <!-- Valor de ejemplo para la casa Ravenclaw. -->
+    <!-- Valor de ejemplo para la casa del alumno. -->
     <string name="sample_house">Ravenclaw</string>
 
     <!-- Valor de ejemplo para la especie del alumno. -->
@@ -140,129 +139,127 @@
     <!-- Valor de ejemplo para la fecha de nacimiento. -->
     <string name="sample_birth">14 March 2007</string>
 
-    <!-- Valor de ejemplo para la nacionalidad. -->
+    <!-- Valor de ejemplo para la nacionalidad del alumno. -->
     <string name="sample_nationality">British or Irish</string>
 
-    <!-- Valor de ejemplo para el Patronus. -->
+    <!-- Valor de ejemplo para el Patronus del alumno. -->
     <string name="sample_patronus">Stag</string>
 
     <!-- Valor de ejemplo para la base de datos de procedencia. -->
     <string name="sample_source">Hogwarts Main Database</string>
 
-    <!-- Instrucción que solicita introducir un identificador o nombre para buscar. -->
-    <string name="enter_student">Introduce el ID o nombre del alumno</string>
+    <!-- Instrucción que solicita introducir un nombre o ID para buscar. -->
+    <string name="enter_student">Enter a student name or ID</string>
 
     <!-- Mensaje mostrado cuando no existen búsquedas anteriores. -->
-    <string name="no_past_search">Sin búsquedas anteriores</string>
+    <string name="no_past_search">No previous searches</string>
 
     <!-- Mensaje de confirmación cuando la API responde correctamente. -->
-    <string name="api_connected">API conectada correctamente</string>
+    <string name="api_connected">API connected successfully</string>
 
     <!--
         Mensaje de error HTTP.
-        %1$d es un parámetro que se sustituye por el código HTTP,
-        por ejemplo, 404 o 500.
+        %1$d es un parámetro numérico que se sustituye por el código HTTP,
+        por ejemplo, 404 (recurso no encontrado) o 500 (error del servidor).
     -->
-    <string name="api_http">FastAPI devolvió HTTP %1$d</string>
+    <string name="api_http">FastAPI returned HTTP %1$d</string>
 
     <!--
         Mensaje de error de conexión.
         %1$s se sustituye por la descripción del error.
     -->
-    <string name="connection_error">Error de conexión: %1$s</string>
+    <string name="connection_error">Connection error: %1$s</string>
+
+    <!-- Título del campo donde se configura la dirección de FastAPI. -->
+    <string name="server_title">FastAPI address</string>
 
     <!--
-        Título del campo donde se introduce la dirección del servidor FastAPI.
+        Instrucciones para configurar la dirección de la API.
+        127.0.0.1 se utiliza cuando se accede mediante adb reverse.
+        10.0.2.2 permite al emulador Android acceder al ordenador anfitrión.
+        En un móvil físico se utiliza la IP del ordenador conectado a la misma Wi-Fi.
+        \n representa un salto de línea dentro del texto.
     -->
-    <string name="server_title">Dirección de FastAPI</string>
-
-    <!--
-        Ayuda para configurar la URL de la API según el dispositivo.
-        127.0.0.1 se utiliza cuando se accede al servidor local mediante
-        adb reverse; 10.0.2.2 permite al emulador Android acceder al PC.
-        En un móvil físico se utiliza la IP del ordenador en la misma Wi-Fi.
-        \n introduce un salto de línea dentro del texto.
-    -->
-    <string name="server_hint">Emulador con adb reverse: http://127.0.0.1:8000/\nEmulador sin adb reverse: http://10.0.2.2:8000/\nMóvil físico: http://IP_DEL_PC:8000/ (misma Wi-Fi)</string>
+    <string name="server_hint">Emulator with adb reverse: http://127.0.0.1:8000/\nEmulator without adb reverse: http://10.0.2.2:8000/\nPhysical phone: http://PC_IP:8000/ (same Wi-Fi)</string>
 
     <!-- Texto del botón para cancelar una operación. -->
-    <string name="cancel">Cancelar</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Texto del botón para guardar la dirección del servidor. -->
-    <string name="save_server">Guardar</string>
+    <string name="save_server">Save</string>
 
-    <!-- Mensaje mostrado cuando la dirección del servidor se ha guardado. -->
-    <string name="server_saved">Servidor guardado</string>
+    <!-- Mensaje mostrado cuando se guarda correctamente la dirección del servidor. -->
+    <string name="server_saved">Server saved</string>
 
     <!--
-        Mensaje mostrado cuando no se encuentran alumnos.
+        Mensaje mostrado cuando no se encuentran alumnos coincidentes.
         %1$s se sustituye por el texto introducido en la búsqueda.
     -->
-    <string name="no_students">No se encontraron alumnos con «%1$s»</string>
+    <string name="no_students">No students found matching “%1$s”</string>
 
     <!-- Mensaje que indica que no se ha encontrado el alumno solicitado. -->
-    <string name="student_not_found">No se encontró el alumno</string>
+    <string name="student_not_found">Student not found</string>
 
-    <!-- Mensaje de error cuando falla la búsqueda de alumnos. -->
-    <string name="search_error">No se pudo buscar. Comprueba la conexión en «Configurar API».</string>
+    <!-- Mensaje de error cuando falla la búsqueda y se debe comprobar la API. -->
+    <string name="search_error">Search failed. Check the connection in “Configure API”.</string>
 
     <!-- Nombre utilizado cuando no se conoce el nombre del alumno. -->
-    <string name="unknown_name">Nombre desconocido</string>
+    <string name="unknown_name">Unknown name</string>
 
     <!-- Valor utilizado cuando no se conoce la casa del alumno. -->
-    <string name="unknown_house">Desconocida</string>
+    <string name="unknown_house">Unknown</string>
 
     <!--
-        Texto que muestra la casa seleccionada.
+        Mensaje que muestra la casa seleccionada.
         %1$s se sustituye por el nombre de la casa.
     -->
-    <string name="choice_house">Casa: %1$s</string>
+    <string name="choice_house">House: %1$s</string>
 
     <!--
-        Título que muestra el número de alumnos encontrados y la búsqueda.
+        Título que muestra el número de alumnos encontrados y el criterio de búsqueda.
         %1$d se sustituye por el número de alumnos.
-        %2$s se sustituye por el texto buscado.
+        %2$s se sustituye por el nombre o ID buscado.
     -->
-    <string name="choice_title">%1$d alumnos para «%2$s»</string>
+    <string name="choice_title">%1$d students matching “%2$s”</string>
 
     <!-- Mensaje mostrado cuando no se puede abrir la ficha seleccionada. -->
-    <string name="cant_open_student">No se pudo abrir la ficha seleccionada</string>
+    <string name="cant_open_student">Could not open the selected student</string>
 
-    <!-- Mensaje que solicita introducir un alumno antes de buscar. -->
-    <string name="no_student_query">Introduce un alumno para buscar</string>
+    <!-- Mensaje que solicita introducir un alumno antes de iniciar la búsqueda. -->
+    <string name="no_student_query">Enter a student to search for</string>
 
-    <!-- Mensaje de error cuando no se pueden cargar los datos del alumno. -->
-    <string name="load_failed">No se pudo cargar el alumno</string>
+    <!-- Mensaje mostrado cuando no se pueden cargar los datos del alumno. -->
+    <string name="load_failed">Could not load student</string>
 
     <!--
-        Mensaje detallado de alumno no encontrado.
+        Mensaje que indica que no se han encontrado alumnos.
         %1$s se sustituye por el identificador o nombre buscado.
     -->
-    <string name="missing_student">No se encontró ningún alumno con «%1$s».</string>
+    <string name="missing_student">No students found matching “%1$s”.</string>
 
     <!--
         Mensaje de error HTTP.
-        %1$d se sustituye por el código de estado recibido de la API.
+        %1$d se sustituye por el código de estado HTTP recibido.
     -->
-    <string name="http_error">HTTP %1$d: respuesta de la API.</string>
+    <string name="http_error">HTTP %1$d: API response.</string>
 
     <!--
-        Mensaje mostrado cuando falla la conexión con el servidor.
-        %1$s se sustituye por la dirección del servidor.
+        Mensaje mostrado cuando no se puede conectar con el servidor.
+        %1$s se sustituye por la dirección de la API.
         También orienta al usuario para comprobar Docker y la configuración.
     -->
-    <string name="network_error">No se pudo conectar con %1$s. Comprueba Docker y la dirección en «Configurar API».</string>
+    <string name="network_error">Could not connect to %1$s. Check Docker and the address in “Configure API”.</string>
 
     <!-- Mensaje genérico para errores que no tienen una descripción específica. -->
-    <string name="unknown_error">Error desconocido</string>
+    <string name="unknown_error">Unknown error</string>
 
     <!--
         Mensaje mostrado cuando la URL introducida no es válida.
-        Incluye un ejemplo de formato correcto.
+        Incluye un ejemplo de dirección válida.
     -->
-    <string name="invalid_api_url">Introduce una URL válida, por ejemplo http://127.0.0.1:8000/</string>
+    <string name="invalid_api_url">Enter a valid URL, for example http://127.0.0.1:8000/</string>
 
     <!-- Texto utilizado cuando no se conoce la base de datos de procedencia. -->
-    <string name="unknown_source">Base de datos desconocida</string>
+    <string name="unknown_source">Unknown database</string>
 
 </resources>
